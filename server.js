@@ -150,7 +150,7 @@ app.get('/', (req, res) => {
   </div>
 </section>
 
-<!-- KATALOG (FAQAT BUTSILAR) -->
+<!-- KATALOG -->
 <section id="katalog" class="max-w-7xl mx-auto px-5 md:px-8 py-20">
   <div class="mb-12 text-center">
     <span class="text-flash font-display uppercase tracking-widest text-sm">Professional Butsilar</span>
@@ -163,7 +163,7 @@ app.get('/', (req, res) => {
     <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
       <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
         <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">01</span>
-        <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=600&q=80" alt="Nike Mercurial" class="h-44 w-full object-cover rounded-xl">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" alt="Nike Mercurial" class="h-44 w-full object-cover rounded-xl">
       </div>
       <div class="p-5 flex flex-col flex-1">
         <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -182,7 +182,7 @@ app.get('/', (req, res) => {
     <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
       <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
         <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">02</span>
-        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80" alt="Adidas Predator" class="h-44 w-full object-cover rounded-xl">
+        <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=600&q=80" alt="Adidas Predator" class="h-44 w-full object-cover rounded-xl">
       </div>
       <div class="p-5 flex flex-col flex-1">
         <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG/AG)</span>
@@ -201,7 +201,7 @@ app.get('/', (req, res) => {
     <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
       <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
         <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">03</span>
-        <img src="https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&q=80" alt="Puma Future" class="h-44 w-full object-cover rounded-xl">
+        <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80" alt="Puma Future" class="h-44 w-full object-cover rounded-xl">
       </div>
       <div class="p-5 flex flex-col flex-1">
         <span class="text-xs uppercase font-bold text-flash">Sun'iy maydon (Turf / TF)</span>
@@ -239,7 +239,7 @@ app.get('/', (req, res) => {
     <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
       <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
         <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">05</span>
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" alt="Nike Tiempo" class="h-44 w-full object-cover rounded-xl">
+        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80" alt="Nike Tiempo" class="h-44 w-full object-cover rounded-xl">
       </div>
       <div class="p-5 flex flex-col flex-1">
         <span class="text-xs uppercase font-bold text-flash">Klassik Charm Butsi</span>
