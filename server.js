@@ -110,7 +110,7 @@ app.get('/', (req, res) => {
         <h2 class="text-2xl font-black uppercase tracking-wide">Katalog</h2>
         <p class="text-xs text-muted">Barcha turdagi maydonlar uchun butsilar</p>
       </div>
-      <span class="text-xs text-muted bg-surface2 px-3 py-1.5 rounded-lg border border-white/5">7 ta model</span>
+      <span class="text-xs text-muted bg-surface2 px-3 py-1.5 rounded-lg border border-white/5">8 ta model</span>
     </div>
 
     <!-- CARDS GRID -->
@@ -120,7 +120,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">01</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/275330_Main_Thumb_1012111.jpg" alt="Nike Mercurial Superfly 9" class="h-44 w-full object-contain">
+          <img src="https://www.u80soccer.com/cache/product/image/40532/w/13/s/1000/nike-air-zoom-mercurial-superfly-9-elite-fg-firm-ground-soccer-cleats-white-black-gold.webp" alt="Nike Mercurial Superfly 9" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -135,19 +135,19 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
-      <!-- Card 2: Adidas Predator FT Elite -->
+      <!-- Card 2: Adidas Predator Elite Laceless -->
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">02</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/1004071_Main_Thumb_1517855.jpg" alt="Adidas Predator FT Elite" class="h-44 w-full object-contain">
+          <img src="https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/015792dafb594d24a0d922a9040974ed_9366/Predator_Elite_Laceless_Firm_Ground_Soccer_Cleats_Black_JS0408_01_standard.jpg" alt="Adidas Predator FT Elite" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Adidas Predator FT Elite</h3>
-          <p class="text-xs text-muted mb-3">Qaytarmali tili, Strikeskin rezina elementlari va maksimal nazorat</p>
+          <h3 class="font-display font-semibold text-xl mb-1">Adidas Predator Elite</h3>
+          <p class="text-xs text-muted mb-3">Strikeskin rezina elementlari va maksimal nazorat</p>
           <p class="text-flash font-bold text-2xl mb-3">1 050 000 <span class="text-sm font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 40 – 44</p>
-          <a href="https://t.me/Moysinjonvv?text=Salom!%20Adidas%20Predator%20FT%20Elite%20haqida%20malumot%20bering" target="_blank" rel="noopener"
+          <a href="https://t.me/Moysinjonvv?text=Salom!%20Adidas%20Predator%20Elite%20haqida%20malumot%20bering" target="_blank" rel="noopener"
              class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
             <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
           </a>
@@ -158,7 +158,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">03</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/262649_Main_Thumb_0989399.jpg" alt="Puma Future Ultimate TF" class="h-44 w-full object-contain">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF9x2bZSE9_YRfiOFCv6wxgnb4fQVxydDnBDNFt7uRfQ&s=10" alt="Puma Future Ultimate TF" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Shtik / Sun'iy maydon (TF)</span>
@@ -177,7 +177,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">04</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/1004128_Main_Thumb_1523326.jpg" alt="Nike Phantom GX II Elite" class="h-44 w-full object-contain">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMA_poDoKoJoDm9bMuMaCJwbQA8O0_Cd02aWvH91I2pQ&s=10" alt="Nike Phantom GX II Elite" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -196,7 +196,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">05</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/275390_Main_Thumb_1012812.jpg" alt="Nike Tiempo Legend 10" class="h-44 w-full object-contain">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVwSgWQugxbeMe0VkQ75YORqbikdTxNB4u2dls0WRc5Q&s=10" alt="Nike Tiempo Legend 10" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -215,7 +215,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">06</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/271239_Main_Thumb_0989914.jpg" alt="Adidas X Crazyfast.1" class="h-44 w-full object-contain">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF7WM4mC8ZUDidojtfh47n0BZmHUJHP5CSw1QaDRmDqQ&s=10" alt="Adidas X Crazyfast.1" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -234,7 +234,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">07</span>
-          <img src="https://images.prodirectsport.com/ProductImages/MainNav/1004382_Main_Thumb_1519789.jpg" alt="Mizuno Morelia Neo IN" class="h-44 w-full object-contain">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSId7R86_Dnsej71H0-LVU1AyGNDgcvtj7sNovJSaGH_Q&s=10" alt="Mizuno Morelia Neo IN" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Zal uchun (IN / IC)</span>
@@ -243,6 +243,25 @@ app.get('/', (req, res) => {
           <p class="text-flash font-bold text-2xl mb-3">850 000 <span class="text-sm font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 38 – 44</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Mizuno%20Morelia%20Neo%20IN%20haqida%20malumot%20bering" target="_blank" rel="noopener"
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 8: Puma King Match FG -->
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
+        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
+          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">08</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU0NvdbBFH2j71T54OaiwFUURv7PoTsmDJD2TvReUcrA&s=10" alt="Puma King Match FG" class="h-44 w-full object-contain">
+        </div>
+        <div class="p-5 flex flex-col flex-1">
+          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
+          <h3 class="font-display font-semibold text-xl mb-1">Puma King Match FG</h3>
+          <p class="text-xs text-muted mb-3">K-Better materiali, yengil konstruksiya va klassik nazorat</p>
+          <p class="text-flash font-bold text-2xl mb-3">870 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+          <p class="text-xs text-muted mb-4">O'lchamlar: 39 – 44</p>
+          <a href="https://t.me/Moysinjonvv?text=Salom!%20Puma%20King%20Match%20FG%20haqida%20malumot%20bering" target="_blank" rel="noopener"
              class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
             <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
           </a>
