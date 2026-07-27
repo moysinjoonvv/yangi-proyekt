@@ -2,9 +2,6 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
-// Static fayllar (rasmlar, CSS) uchun public papkasini ulash
-app.use(express.static('public'));
-
 app.get('/', (req, res) => {
   res.send(`
 <!DOCTYPE html>
@@ -67,7 +64,7 @@ app.get('/', (req, res) => {
 
   <!-- HEADER / NAVBAR -->
   <header class="sticky top-0 z-50 bg-gray-950/80 backdrop-blur-md border-b border-white/10">
-    <div class="max-w-7xl mx-mx auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       
       <!-- Logo -->
       <a href="#" class="flex items-center gap-3 group">
@@ -123,7 +120,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">01</span>
-          <img src="/images/mercurial.png" alt="Nike Mercurial Superfly 9" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/275330_Main_Thumb_1012111.jpg" alt="Nike Mercurial Superfly 9" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -142,7 +139,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">02</span>
-          <img src="/images/predator.png" alt="Adidas Predator FT Elite" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/1004071_Main_Thumb_1517855.jpg" alt="Adidas Predator FT Elite" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -161,7 +158,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">03</span>
-          <img src="/images/future.png" alt="Puma Future Ultimate TF" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/262649_Main_Thumb_0989399.jpg" alt="Puma Future Ultimate TF" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Shtik / Sun'iy maydon (TF)</span>
@@ -180,7 +177,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">04</span>
-          <img src="/images/phantom.png" alt="Nike Phantom GX II Elite" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/1004128_Main_Thumb_1523326.jpg" alt="Nike Phantom GX II Elite" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -199,7 +196,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">05</span>
-          <img src="/images/tiempo.png" alt="Nike Tiempo Legend 10" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/275390_Main_Thumb_1012812.jpg" alt="Nike Tiempo Legend 10" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -218,7 +215,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">06</span>
-          <img src="/images/crazyfast.png" alt="Adidas X Crazyfast.1" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/271239_Main_Thumb_0989914.jpg" alt="Adidas X Crazyfast.1" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
@@ -237,7 +234,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
         <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
           <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">07</span>
-          <img src="/images/morelia.png" alt="Mizuno Morelia Neo IN" class="h-44 w-full object-contain">
+          <img src="https://images.prodirectsport.com/ProductImages/MainNav/1004382_Main_Thumb_1519789.jpg" alt="Mizuno Morelia Neo IN" class="h-44 w-full object-contain">
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase font-bold text-flash">Zal uchun (IN / IC)</span>
@@ -252,32 +249,13 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
-      <!-- Card 8: Puma King Match FG -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">08</span>
-          <img src="/images/puma-king.png" alt="Puma King Match FG" class="h-44 w-full object-contain">
-        </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Puma King Match FG</h3>
-          <p class="text-xs text-muted mb-3">K-Better materiali, yengil konstruksiya va klassik nazorat</p>
-          <p class="text-flash font-bold text-2xl mb-3">870 000 <span class="text-sm font-normal text-muted">so'm</span></p>
-          <p class="text-xs text-muted mb-4">O'lchamlar: 39 – 44</p>
-          <a href="https://t.me/Moysinjonvv?text=Salom!%20Puma%20King%20Match%20FG%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
-          </a>
-        </div>
-      </div>
-
     </div>
   </main>
 
   <!-- FOOTER -->
   <footer class="bg-surface border-t border-white/10 py-8 mt-12">
     <div class="max-w-7xl mx-auto px-4 text-center text-xs text-muted">
-      <p class="mb-2">© 2026 Flash Boots Store. Barcha huquqlar mysterious dev tomonidan himoyalangan.</p>
+      <p class="mb-2">© 2026 Flash Boots Store. Barcha huquqlar himoyalangan.</p>
       <p>O'zbekiston bo'ylab yetkazib berish xizmati mavjud.</p>
     </div>
   </footer>
