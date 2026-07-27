@@ -119,7 +119,7 @@ app.get('/', (req, res) => {
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">01</span>
           <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80" 
                alt="Nike Mercurial Superfly 9" 
-               class="h-40 w-full object-contain transform -rotate-6 hover:scale-105 transition-transform duration-300">
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
         <div class="p-4 flex flex-col flex-1">
           <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
@@ -138,7 +138,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">02</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF9x2bZSE9_YRfiOFCv6wxgnb4fQVxydDnBDNFt7uRfQ&s=10" 
+          <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=600&q=80" 
                alt="Adidas Predator Elite" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
