@@ -134,7 +134,7 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
-      <!-- Card 2: Adidas Predator Elite (SIZ BERGAN RASM QO'YILDI) -->
+      <!-- Card 2: Adidas Predator Elite -->
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">02</span>
@@ -155,11 +155,11 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
-      <!-- Card 3: Puma Future Ultimate TF -->
+      <!-- Card 3: Puma Future Ultimate TF (SIZ YUBORGAN PUMA RASMI) -->
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">03</span>
-          <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAghkVtPGJljNgHRd0hzv1TnqlIhvkgFRMBe96KCE3-Q&s=10" 
                alt="Puma Future Ultimate TF" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -176,7 +176,7 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
-      <!-- Card 4: Nike Phantom GX II Elite (SIZ BERGAN RASM QO'YILDI) -->
+      <!-- Card 4: Nike Phantom GX II Elite -->
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">04</span>
@@ -201,7 +201,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">05</span>
-          <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxB-Ehi55g5WwJdBR1snKOQ1fao1_VitICBrwPcaBXwA&s=10" 
                alt="Nike Tiempo Legend 10" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -222,7 +222,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">06</span>
-          <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=600&q=80" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWkeM2Cd8RAK13urmOOidzG64wetnPGJUfeTIRHNH0LQ&s=10" 
                alt="Adidas X Crazyfast.1" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -243,7 +243,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">07</span>
-          <img src="https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=600&q=80" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWkeM2Cd8RAK13urmOOidzG64wetnPGJUfeTIRHNH0LQ&s=10" 
                alt="Mizuno Morelia Neo IN" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -260,11 +260,11 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
-      <!-- Card 8: Puma King Match FG -->
+      <!-- Card 8: Puma King Match FG (SIZ YUBORGAN PUMA RASMI) -->
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">08</span>
-          <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=600&q=80" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAghkVtPGJljNgHRd0hzv1TnqlIhvkgFRMBe96KCE3-Q&s=10" 
                alt="Puma King Match FG" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
