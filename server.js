@@ -138,7 +138,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">02</span>
-          <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=600&q=80" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWkeM2Cd8RAK13urmOOidzG64wetnPGJUfeTIRHNH0LQ&s=10" 
                alt="Adidas Predator Elite" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -159,7 +159,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">03</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF9x2bZSE9_YRfiOFCv6wxgnb4fQVxydDnBDNFt7uRfQ&s=10" 
+          <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80" 
                alt="Puma Future Ultimate TF" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -180,7 +180,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">04</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMA_poDoKoJoDm9bMuMaCJwbQA8O0_Cd02aWvH91I2pQ&s=10" 
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxB-Ehi55g5WwJdBR1snKOQ1fao1_VitICBrwPcaBXwA&s=10" 
                alt="Nike Phantom GX II Elite" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -201,7 +201,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">05</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVwSgWQugxbeMe0VkQ75YORqbikdTxNB4u2dls0WRc5Q&s=10" 
+          <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80" 
                alt="Nike Tiempo Legend 10" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -222,7 +222,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">06</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF7WM4mC8ZUDidojtfh47n0BZmHUJHP5CSw1QaDRmDqQ&s=10" 
+          <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=600&q=80" 
                alt="Adidas X Crazyfast.1" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -243,7 +243,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">07</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSId7R86_Dnsej71H0-LVU1AyGNDgcvtj7sNovJSaGH_Q&s=10" 
+          <img src="https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=600&q=80" 
                alt="Mizuno Morelia Neo IN" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
@@ -264,7 +264,7 @@ app.get('/', (req, res) => {
       <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
         <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
           <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">08</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU0NvdbBFH2j71T54OaiwFUURv7PoTsmDJD2TvReUcrA&s=10" 
+          <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=600&q=80" 
                alt="Puma King Match FG" 
                class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
