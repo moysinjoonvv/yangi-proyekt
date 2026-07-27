@@ -49,14 +49,11 @@ app.get('/', (req, res) => {
     }
     .card-hover:hover {
       transform: translateY(-8px);
-      box-shadow: 0 20px 25px -5px rgba(220, 38, 38, 0.2), 0 8px 10px -6px rgba(220, 38, 38, 0.2);
+      box-shadow: 0 20px 25px -5px rgba(220, 38, 38, 0.25), 0 8px 10px -6px rgba(220, 38, 38, 0.2);
     }
     .jersey-num {
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+      -webkit-text-stroke: 1px rgba(0, 0, 0, 0.15);
       color: transparent;
-    }
-    .clip-diagonal {
-      clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
     }
   </style>
 </head>
@@ -68,7 +65,7 @@ app.get('/', (req, res) => {
       
       <!-- Logo -->
       <a href="#" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 bg-flash rounded-xl flex items-center justify-center font-black text-xl italic tracking-tighter transform -skew-x-12 group-hover:scale-105 transition-transform">
+        <div class="w-10 h-10 bg-flash rounded-xl flex items-center justify-center font-black text-xl italic tracking-tighter transform -skew-x-12 group-hover:scale-105 transition-transform text-white">
           FB
         </div>
         <div class="flex flex-col">
@@ -117,153 +114,169 @@ app.get('/', (req, res) => {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
       <!-- Card 1: Nike Mercurial Superfly 9 -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">01</span>
-          <img src="https://www.u80soccer.com/cache/product/image/40532/w/13/s/1000/nike-air-zoom-mercurial-superfly-9-elite-fg-firm-ground-soccer-cleats-white-black-gold.webp" alt="Nike Mercurial Superfly 9" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">01</span>
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80" 
+               alt="Nike Mercurial Superfly 9" 
+               class="h-40 w-full object-contain transform -rotate-6 hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Nike Mercurial Superfly 9</h3>
-          <p class="text-xs text-muted mb-3">Zoom Air amortizatsiyasi, oltin taglik va yengil korpus</p>
-          <p class="text-flash font-bold text-2xl mb-3">980 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Nike Mercurial Superfly 9</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">Zoom Air amortizatsiyasi, yengil korpus va tezlik uchun maxsus taglik</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">980 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 39 – 45</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Nike%20Mercurial%20Superfly%209%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 2: Adidas Predator Elite Laceless -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">02</span>
-          <img src="https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/015792dafb594d24a0d922a9040974ed_9366/Predator_Elite_Laceless_Firm_Ground_Soccer_Cleats_Black_JS0408_01_standard.jpg" alt="Adidas Predator FT Elite" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">02</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF9x2bZSE9_YRfiOFCv6wxgnb4fQVxydDnBDNFt7uRfQ&s=10" 
+               alt="Adidas Predator Elite" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Adidas Predator Elite</h3>
-          <p class="text-xs text-muted mb-3">Strikeskin rezina elementlari va maksimal nazorat</p>
-          <p class="text-flash font-bold text-2xl mb-3">1 050 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Adidas Predator Elite</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">Strikeskin rezina elementlari va maksimal koptok nazorati</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">1 050 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 40 – 44</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Adidas%20Predator%20Elite%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 3: Puma Future Ultimate TF -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">03</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF9x2bZSE9_YRfiOFCv6wxgnb4fQVxydDnBDNFt7uRfQ&s=10" alt="Puma Future Ultimate TF" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">03</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF9x2bZSE9_YRfiOFCv6wxgnb4fQVxydDnBDNFt7uRfQ&s=10" 
+               alt="Puma Future Ultimate TF" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Shtik / Sun'iy maydon (TF)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Puma Future Ultimate TF</h3>
-          <p class="text-xs text-muted mb-3">PWRTAPE ushlab turuvchi tasmali yengil va elastik korpus</p>
-          <p class="text-flash font-bold text-2xl mb-3">890 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Shtik / Sun'iy maydon (TF)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Puma Future Ultimate TF</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">PWRTAPE ushlab turuvchi tasmali yengil va elastik korpus</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">890 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 38 – 43</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Puma%20Future%20Ultimate%20TF%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 4: Nike Phantom GX II Elite -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">04</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMA_poDoKoJoDm9bMuMaCJwbQA8O0_Cd02aWvH91I2pQ&s=10" alt="Nike Phantom GX II Elite" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">04</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMA_poDoKoJoDm9bMuMaCJwbQA8O0_Cd02aWvH91I2pQ&s=10" 
+               alt="Nike Phantom GX II Elite" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Nike Phantom GX II Elite</h3>
-          <p class="text-xs text-muted mb-3">Gripknit ustki qoplamasi va aniq zarbalar uchun mukammal moslik</p>
-          <p class="text-flash font-bold text-2xl mb-3">1 120 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Nike Phantom GX II Elite</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">Gripknit ustki qoplamasi va aniq zarbalar uchun mukammal moslik</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">1 120 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 39 – 44</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Nike%20Phantom%20GX%20II%20Elite%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 5: Nike Tiempo Legend 10 -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">05</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVwSgWQugxbeMe0VkQ75YORqbikdTxNB4u2dls0WRc5Q&s=10" alt="Nike Tiempo Legend 10" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">05</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVwSgWQugxbeMe0VkQ75YORqbikdTxNB4u2dls0WRc5Q&s=10" 
+               alt="Nike Tiempo Legend 10" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Nike Tiempo Legend 10</h3>
-          <p class="text-xs text-muted mb-3">FlyTouch Pro yumshoq sun'iy teri va klassik qulaylik</p>
-          <p class="text-flash font-bold text-2xl mb-3">920 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Nike Tiempo Legend 10</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">FlyTouch Pro yumshoq sun'iy teri va klassik qulaylik</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">920 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 40 – 45</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Nike%20Tiempo%20Legend%2010%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 6: Adidas X Crazyfast.1 -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">06</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF7WM4mC8ZUDidojtfh47n0BZmHUJHP5CSw1QaDRmDqQ&s=10" alt="Adidas X Crazyfast.1" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">06</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF7WM4mC8ZUDidojtfh47n0BZmHUJHP5CSw1QaDRmDqQ&s=10" 
+               alt="Adidas X Crazyfast.1" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Adidas X Crazyfast.1</h3>
-          <p class="text-xs text-muted mb-3">Aeropacity Speedskin ultrafoydali yengil korpus va sprint taglik</p>
-          <p class="text-flash font-bold text-2xl mb-3">990 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Adidas X Crazyfast.1</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">Aeropacity Speedskin ultrafoydali yengil korpus va sprint taglik</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">990 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 39 – 43</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Adidas%20X%20Crazyfast.1%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 7: Mizuno Morelia Neo IN -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">07</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSId7R86_Dnsej71H0-LVU1AyGNDgcvtj7sNovJSaGH_Q&s=10" alt="Mizuno Morelia Neo IN" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">07</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSId7R86_Dnsej71H0-LVU1AyGNDgcvtj7sNovJSaGH_Q&s=10" 
+               alt="Mizuno Morelia Neo IN" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Zal uchun (IN / IC)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Mizuno Morelia Neo IN</h3>
-          <p class="text-xs text-muted mb-3">Yapon sifati, keng oyoqlar uchun ideal va sirpanmaydigan taglik</p>
-          <p class="text-flash font-bold text-2xl mb-3">850 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Zal uchun (IN / IC)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Mizuno Morelia Neo IN</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">Yapon sifati, keng oyoqlar uchun ideal va sirpanmaydigan taglik</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">850 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 38 – 44</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Mizuno%20Morelia%20Neo%20IN%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
 
       <!-- Card 8: Puma King Match FG -->
-      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div class="relative clip-diagonal bg-surface2 h-56 flex items-center justify-center p-4">
-          <span class="jersey-num absolute -top-2 right-3 text-6xl font-bold select-none">08</span>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU0NvdbBFH2j71T54OaiwFUURv7PoTsmDJD2TvReUcrA&s=10" alt="Puma King Match FG" class="h-44 w-full object-contain">
+      <div class="card-hover bg-surface border border-white/10 rounded-2xl overflow-hidden flex flex-col p-2">
+        <div class="relative bg-white rounded-xl h-52 flex items-center justify-center p-3 overflow-hidden">
+          <span class="jersey-num absolute top-1 right-3 text-5xl font-black select-none opacity-20">08</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU0NvdbBFH2j71T54OaiwFUURv7PoTsmDJD2TvReUcrA&s=10" 
+               alt="Puma King Match FG" 
+               class="h-40 w-full object-contain hover:scale-105 transition-transform duration-300">
         </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-xs uppercase font-bold text-flash">Maysa uchun (FG)</span>
-          <h3 class="font-display font-semibold text-xl mb-1">Puma King Match FG</h3>
-          <p class="text-xs text-muted mb-3">K-Better materiali, yengil konstruksiya va klassik nazorat</p>
-          <p class="text-flash font-bold text-2xl mb-3">870 000 <span class="text-sm font-normal text-muted">so'm</span></p>
+        <div class="p-4 flex flex-col flex-1">
+          <span class="text-[11px] uppercase font-bold text-flash mb-1">Maysa uchun (FG)</span>
+          <h3 class="font-display font-bold text-lg mb-1 text-white">Puma King Match FG</h3>
+          <p class="text-xs text-muted mb-3 line-clamp-2">K-Better materiali, yengil konstruksiya va klassik nazorat</p>
+          <p class="text-flash font-extrabold text-2xl mb-3">870 000 <span class="text-xs font-normal text-muted">so'm</span></p>
           <p class="text-xs text-muted mb-4">O'lchamlar: 39 – 44</p>
           <a href="https://t.me/Moysinjonvv?text=Salom!%20Puma%20King%20Match%20FG%20haqida%20malumot%20bering" target="_blank" rel="noopener"
-             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
-            <i class="fa-brands fa-telegram"></i> Telegram'da buyurtma
+             class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-xs font-bold text-center px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-telegram text-sm"></i> Telegram'da buyurtma
           </a>
         </div>
       </div>
