@@ -10,7 +10,10 @@ app.get('/', (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             
-            <!-- Google shularni o'qiydi -->
+            <!-- Google Search Console tasdiqlash kodi -->
+            <meta name="google-site-verification" content="osGraURC-Y5MRG12VYCnGuOzZm7wNwN1DwQeYqXpD8A" />
+
+            <!-- Google va qidiruv tizimlari uchun SEO teglari -->
             <title>Original Butsilar Do'koni | Futbol Oyoq Kiyimlari</title>
             <meta name="description" content="Eng sifatli va original futbol butsilarini hamyonbop narxlarda sotib oling.">
             <meta name="keywords" content="butsi, futbol butsisi, original butsi, nike, adidas">
