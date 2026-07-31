@@ -138,7 +138,12 @@ app.get('/api/auth/me', (req, res) => {
 //  BUYURTMALAR API
 // ============================================================
 app.post('/api/order', (req, res) => {
-  const { name, phone, address, lat, lng, comment, cart } = req.body || {};
+  const user = getCurrentUser(req);
+  if (!user) {
+    return res.status(401).json({ success: false, message: "Buyurtma berish uchun avval ro'yxatdan o'ting yoki akkountingizga kiring", authRequired: true });
+  }
+
+  const { name, phone, address, lat, lng, comment, paymentMethod, cart } = req.body || {};
   if (!name || !phone || !address || !Array.isArray(cart) || cart.length === 0) {
     return res.status(400).json({ success: false, message: "Ma'lumotlar to'liq emas" });
   }
@@ -159,14 +164,14 @@ app.post('/api/order', (req, res) => {
   });
   saveStock(stock);
 
-  const user = getCurrentUser(req);
   const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   const order = {
     id: 'FB-' + Date.now(),
     date: new Date().toISOString(),
-    userId: user ? user.id : null,
+    userId: user.id,
     name, phone, address, lat: lat || null, lng: lng || null,
     comment: comment || '',
+    paymentMethod: paymentMethod === 'card' ? 'card' : 'cash',
     cart, total
   };
   const orders = readJSON(ORDERS_FILE, []);
@@ -187,7 +192,13 @@ app.get('/admin/orders', (req, res) => {
       <td style="padding:12px;">${o.name}</td>
       <td style="padding:12px;"><a href="tel:${o.phone}" style="color:#1F5C34;">${o.phone}</a></td>
       <td style="padding:12px;max-width:260px;">${o.address}${o.lat ? ` <a href="https://www.google.com/maps?q=${o.lat},${o.lng}" target="_blank" style="color:#00B2FF;">(xaritada)</a>` : ''}</td>
-      <td style="padding:12px;">${o.cart.map(i => i.name + ' ×' + i.qty + ' (razmer ' + i.size + ')').join('<br>')}</td>
+      <td style="padding:12px;">${o.cart.map(i => {
+        const allItems = [...products, ...signatureProducts, ...equipmentProducts];
+        const found = allItems.find(p => p.id === i.id);
+        const label = found ? (found.i18n.uz.name) : i.id;
+        return label + ' ×' + i.qty + (i.size != null ? ' (razmer ' + i.size + ')' : '');
+      }).join('<br>')}</td>
+      <td style="padding:12px;">${o.paymentMethod === 'card' ? "💳 Karta" : "💵 Naqd"}</td>
       <td style="padding:12px;font-weight:bold;color:#1F5C34;">${o.total.toLocaleString('ru-RU').replace(/,/g,' ')} so'm</td>
     </tr>`).join('');
 
@@ -201,8 +212,8 @@ app.get('/admin/orders', (req, res) => {
 <body>
   <h1>Buyurtmalar (${orders.length})</h1>
   <table>
-    <thead><tr><th>ID</th><th>Sana</th><th>Ism</th><th>Telefon</th><th>Manzil</th><th>Mahsulotlar</th><th>Jami</th></tr></thead>
-    <tbody>${rows || '<tr><td style="padding:20px;" colspan="7">Hali buyurtma yo\'q</td></tr>'}</tbody>
+    <thead><tr><th>ID</th><th>Sana</th><th>Ism</th><th>Telefon</th><th>Manzil</th><th>Mahsulotlar</th><th>To'lov</th><th>Jami</th></tr></thead>
+    <tbody>${rows || '<tr><td style="padding:20px;" colspan="8">Hali buyurtma yo\'q</td></tr>'}</tbody>
   </table>
 </body></html>`);
 });
@@ -413,23 +424,23 @@ function getStock() {
 }
 function saveStock(stock) { writeJSON(STOCK_FILE, stock); }
 
-app.get('/', (req, res) => {
-  const stock = getStock();
-  const productsWithStock = products.map(p => Object.assign({}, p, { stock: stock[p.id] || {} }));
-  const signatureWithStock = signatureProducts.map(p => Object.assign({}, p, { stock: stock[p.id] || {} }));
 
-  res.send(`<!DOCTYPE html>
+// ============================================================
+//  UMUMIY SAHIFA QISMLARI (head/header/footer/modallar/skript)
+// ============================================================
+function pageHead(title, desc) {
+  return `<!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elite Boots — Professional Futbol Butsilari</title>
-<meta name="description" content="Elite Boots — Nike, Adidas, Puma va Mizuno original futbol butsilari.">
+<title>${title}</title>
+<meta name="description" content="${desc}">
 <meta name="google-site-verification" content="osGraURC-Y5MRG12VYCnGuOzZm7wNwN1DwQeYqXpD8A" />
 <meta property="og:type" content="website">
-<meta property="og:title" content="Elite Boots — Professional Futbol Butsilari">
+<meta property="og:title" content="${title}">
 <meta property="og:url" content="https://yangi-proyekt.onrender.com/">
-<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="icon" type="image/png" href="/images/favicon.png">
 
 <!-- Mavzu flashini oldini olish uchun eng erta ishga tushadigan skript -->
 <script>
@@ -488,6 +499,8 @@ app.get('/', (req, res) => {
   }
   .brand-tab:hover { border-color: #1F5C34; color: var(--c-text); }
   .brand-tab.active { background: #1F5C34; border-color: #1F5C34; color: #fff; }
+  .payment-option { background: var(--c-surface2); color: var(--c-muted); }
+  .payment-option.selected { background: #1F5C34; border-color: #1F5C34 !important; color: #fff; }
   .lang-btn {
     padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
     color: var(--c-muted); transition: all .2s ease; cursor: pointer;
@@ -498,13 +511,18 @@ app.get('/', (req, res) => {
   ::-webkit-scrollbar-thumb { background: #1F5C34; border-radius: 4px; }
   .auth-tab { padding: 10px; text-align:center; font-weight:600; font-size:14px; color: var(--c-muted); cursor:pointer; border-bottom: 2px solid transparent; }
   .auth-tab.active { color: var(--c-text); border-color: #1F5C34; }
+  .navlink.active { color: #1F5C34 !important; }
 </style>
 </head>
-<body class="font-body">
+`;
+}
+
+function pageHeader() {
+  return `<body class="font-body">
 
 <header class="sticky top-0 z-50 backdrop-blur-md border-b" style="background-color:color-mix(in srgb, var(--c-bg) 90%, transparent); border-color:var(--c-border);">
   <div class="max-w-7xl mx-auto px-5 md:px-8 flex items-center justify-between h-20">
-    <a href="#top" class="flex items-center gap-3 font-display font-bold text-2xl">
+    <a href="/" class="flex items-center gap-3 font-display font-bold text-2xl">
       <img src="/images/logo.png" alt="Elite Boots" class="w-11 h-11 rounded-full object-cover">
       EB ELITEBOOTS <span class="text-flash text-sm block font-body font-normal">Pro Sport Store</span>
     </a>
@@ -545,20 +563,20 @@ app.get('/', (req, res) => {
 
   <!-- Navigatsiya menyusi -->
   <nav class="hidden md:flex items-center justify-center gap-8 border-t py-3 text-sm font-semibold uppercase tracking-wide" style="border-color:var(--c-border);">
-    <a href="#top" class="hover:text-flash transition-colors" data-i18n="nav_home"></a>
-    <a href="#signature" class="hover:text-flash transition-colors" data-i18n="nav_signature"></a>
-    <a href="#anjomlar" class="hover:text-flash transition-colors" data-i18n="nav_equipment"></a>
-    <a href="#katalog" class="hover:text-flash transition-colors" data-i18n="nav_catalog"></a>
-    <a href="#about" class="hover:text-flash transition-colors" data-i18n="nav_about"></a>
+    <a href="/" class="hover:text-flash transition-colors navlink" data-nav="home" data-i18n="nav_home"></a>
+    <a href="/signature" class="hover:text-flash transition-colors navlink" data-nav="signature" data-i18n="nav_signature"></a>
+    <a href="/anjomlar" class="hover:text-flash transition-colors navlink" data-nav="anjomlar" data-i18n="nav_equipment"></a>
+    <a href="/katalog" class="hover:text-flash transition-colors navlink" data-nav="katalog" data-i18n="nav_catalog"></a>
+    <a href="/about" class="hover:text-flash transition-colors navlink" data-nav="about" data-i18n="nav_about"></a>
   </nav>
 
   <!-- Mobil navigatsiya -->
   <nav id="mobileNav" class="hidden md:hidden flex flex-col border-t py-3 text-sm font-semibold uppercase tracking-wide" style="border-color:var(--c-border);">
-    <a href="#top" class="px-5 py-3 hover:text-flash transition-colors" data-i18n="nav_home"></a>
-    <a href="#signature" class="px-5 py-3 hover:text-flash transition-colors" data-i18n="nav_signature"></a>
-    <a href="#anjomlar" class="px-5 py-3 hover:text-flash transition-colors" data-i18n="nav_equipment"></a>
-    <a href="#katalog" class="px-5 py-3 hover:text-flash transition-colors" data-i18n="nav_catalog"></a>
-    <a href="#about" class="px-5 py-3 hover:text-flash transition-colors" data-i18n="nav_about"></a>
+    <a href="/" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="home" data-i18n="nav_home"></a>
+    <a href="/signature" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="signature" data-i18n="nav_signature"></a>
+    <a href="/anjomlar" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="anjomlar" data-i18n="nav_equipment"></a>
+    <a href="/katalog" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="katalog" data-i18n="nav_catalog"></a>
+    <a href="/about" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="about" data-i18n="nav_about"></a>
     <a href="https://t.me/${TELEGRAM_USERNAME}" target="_blank" rel="noopener" class="px-5 py-3 text-flash flex items-center gap-2"><i class="fa-brands fa-telegram"></i> <span data-i18n="footer_contact"></span></a>
   </nav>
 
@@ -569,135 +587,19 @@ app.get('/', (req, res) => {
     <button class="lang-btn" id="langBtnEnM" onclick="setLang('en')">EN</button>
   </div>
 </header>
+`;
+}
 
-
-<section id="top" class="relative overflow-hidden">
-  <div class="absolute -top-32 -right-32 w-96 h-96 bg-flash/15 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="max-w-7xl mx-auto px-5 md:px-8 py-16 text-center relative z-10">
-    <span class="text-flash text-xs uppercase tracking-widest font-semibold" data-i18n="hero_badge"></span>
-    <h1 class="font-display font-bold text-4xl md:text-5xl uppercase mt-3 mb-4" data-i18n="hero_title"></h1>
-    <p class="text-muted max-w-xl mx-auto mb-8" data-i18n="hero_subtitle"></p>
-
-    <div class="flex flex-wrap gap-3 justify-center mb-10">
-      <a href="#katalog" class="bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2">
-        <span data-i18n="hero_cta_catalog"></span> <i class="fa-solid fa-arrow-right"></i>
-      </a>
-      <a href="#signature" class="bg-surface border hover:border-flash transition-colors font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2" style="border-color:var(--c-border);">
-        <i class="fa-solid fa-star text-flash"></i> <span data-i18n="hero_cta_signature"></span>
-      </a>
-    </div>
-
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
-      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
-        <p class="font-display font-bold text-2xl text-flash">8+</p>
-        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_models"></p>
-      </div>
-      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
-        <p class="font-display font-bold text-2xl text-flash">100%</p>
-        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_original"></p>
-      </div>
-      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
-        <p class="font-display font-bold text-2xl text-flash">34-45</p>
-        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_sizes"></p>
-      </div>
-      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
-        <p class="font-display font-bold text-2xl text-flash">24/7</p>
-        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_support"></p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FUTBOL DUNYOSIDAN: maslahat/yangiliklar (bosh sahifadagi katalog o'rniga) -->
-<section class="max-w-7xl mx-auto px-5 md:px-8 py-14">
-  <div class="text-center mb-10">
-    <span class="text-flash text-xs uppercase tracking-widest font-semibold" data-i18n="news_badge"></span>
-    <h2 class="font-display font-bold text-3xl uppercase mt-2" data-i18n="news_title"></h2>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
-      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-ruler"></i></div>
-      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="news1_title"></h3>
-      <p class="text-muted text-sm" data-i18n="news1_desc"></p>
-    </div>
-    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
-      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-scale-balanced"></i></div>
-      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="news2_title"></h3>
-      <p class="text-muted text-sm" data-i18n="news2_desc"></p>
-    </div>
-    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
-      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-shoe-prints"></i></div>
-      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="news3_title"></h3>
-      <p class="text-muted text-sm" data-i18n="news3_desc"></p>
-    </div>
-  </div>
-</section>
-
-<!-- MASHHUR FUTBOLCHILAR EDITION -->
-<section id="signature" class="max-w-7xl mx-auto px-5 md:px-8 py-14">
-  <div class="mb-8">
-    <h2 class="font-display font-bold text-2xl uppercase" data-i18n="signature_title"></h2>
-    <p class="text-muted text-sm" data-i18n="signature_subtitle"></p>
-  </div>
-  <div id="signatureGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-</section>
-
-<!-- FUTBOL ANJOMLARI -->
-<section id="anjomlar" class="max-w-7xl mx-auto px-5 md:px-8 py-14">
-  <div class="mb-8">
-    <h2 class="font-display font-bold text-2xl uppercase" data-i18n="equipment_title"></h2>
-    <p class="text-muted text-sm" data-i18n="equipment_subtitle"></p>
-  </div>
-  <div class="flex flex-wrap gap-2 mb-8">
-    <button class="brand-tab active" data-cat="all" onclick="filterEquipment('all', this)"><span data-i18n="filter_all"></span></button>
-    <button class="brand-tab" data-cat="ball" onclick="filterEquipment('ball', this)" data-i18n="cat_ball"></button>
-    <button class="brand-tab" data-cat="gloves" onclick="filterEquipment('gloves', this)" data-i18n="cat_gloves"></button>
-    <button class="brand-tab" data-cat="jersey" onclick="filterEquipment('jersey', this)" data-i18n="cat_jersey"></button>
-    <button class="brand-tab" data-cat="socks" onclick="filterEquipment('socks', this)" data-i18n="cat_socks"></button>
-    <button class="brand-tab" data-cat="protection" onclick="filterEquipment('protection', this)" data-i18n="cat_protection"></button>
-  </div>
-  <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-</section>
-
-<section id="katalog" class="max-w-7xl mx-auto px-5 md:px-8 py-10">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-    <div>
-      <h2 class="font-display font-bold text-2xl uppercase" data-i18n="catalog_title"></h2>
-      <p class="text-muted text-sm" data-i18n="catalog_subtitle"></p>
-    </div>
-    <span id="resultCount" class="bg-surface border rounded-full px-4 py-1.5 text-sm w-fit" style="border-color:var(--c-border);"></span>
-  </div>
-
-  <div class="flex flex-wrap gap-2 mb-8">
-    <button class="brand-tab active" data-brand="all" onclick="filterBrand('all', this)">
-      <i class="fa-solid fa-border-all"></i> <span data-i18n="filter_all"></span>
-    </button>
-    <button class="brand-tab" data-brand="Nike" onclick="filterBrand('Nike', this)"><i class="fa-solid fa-check"></i> Nike</button>
-    <button class="brand-tab" data-brand="Adidas" onclick="filterBrand('Adidas', this)"><i class="fa-solid fa-star"></i> Adidas</button>
-    <button class="brand-tab" data-brand="Puma" onclick="filterBrand('Puma', this)"><i class="fa-solid fa-paw"></i> Puma</button>
-    <button class="brand-tab" data-brand="Mizuno" onclick="filterBrand('Mizuno', this)"><i class="fa-solid fa-bolt"></i> Mizuno</button>
-  </div>
-
-  <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-  <p id="emptyState" class="hidden text-center text-muted py-16" data-i18n="empty_state"></p>
-</section>
-
-<!-- BIZ HAQIMIZDA -->
-<section id="about" class="max-w-7xl mx-auto px-5 md:px-8 py-16">
-  <div class="bg-surface border rounded-3xl p-8 md:p-12 text-center" style="border-color:var(--c-border);">
-    <h2 class="font-display font-bold text-2xl md:text-3xl uppercase mb-4" data-i18n="about_title"></h2>
-    <p class="text-muted max-w-2xl mx-auto" data-i18n="about_text"></p>
-  </div>
-</section>
-
-
-<footer class="border-t py-8 text-center text-xs text-muted" style="border-color:var(--c-border);">
+function pageFooter() {
+  return `<footer class="border-t py-8 text-center text-xs text-muted" style="border-color:var(--c-border);">
   &copy; ${new Date().getFullYear()} Elite Boots Store. <span data-i18n="footer_rights"></span><br>
   <span data-i18n="footer_delivery"></span>
 </footer>
+`;
+}
 
-<!-- O'LCHAM TANLASH MODAL -->
+function pageModals() {
+  return `<!-- O'LCHAM TANLASH MODAL -->
 <div id="sizeModalOverlay" class="overlay hidden fixed inset-0 backdrop-blur-sm z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4" style="background-color:var(--c-overlay);" onclick="if(event.target===this) closeSizeModal()">
   <div class="bg-surface w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl overflow-hidden max-h-[90vh] flex flex-col">
     <div class="p-5 border-b flex items-center justify-between shrink-0" style="border-color:var(--c-border);">
@@ -773,6 +675,17 @@ app.get('/', (req, res) => {
         <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="label_comment"></label>
         <textarea id="ckComment" rows="2" class="w-full bg-surface2 border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-flash resize-none" style="border-color:var(--c-border);"></textarea>
       </div>
+      <div>
+        <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="payment_method_label"></label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="payCashBtn" onclick="selectPayment('cash')" class="payment-option flex items-center justify-center gap-2 border rounded-xl py-3 text-sm font-semibold transition-colors" style="border-color:var(--c-border);">
+            <i class="fa-solid fa-money-bill-wave"></i> <span data-i18n="payment_cash"></span>
+          </button>
+          <button type="button" id="payCardBtn" onclick="selectPayment('card')" class="payment-option flex items-center justify-center gap-2 border rounded-xl py-3 text-sm font-semibold transition-colors" style="border-color:var(--c-border);">
+            <i class="fa-solid fa-credit-card"></i> <span data-i18n="payment_card"></span>
+          </button>
+        </div>
+      </div>
       <div class="bg-surface2 rounded-xl p-4 flex items-center justify-between">
         <span class="text-muted text-sm" data-i18n="total_payment"></span>
         <span id="ckTotal" class="font-display font-bold text-flash text-xl">0 so'm</span>
@@ -815,6 +728,10 @@ app.get('/', (req, res) => {
       <div id="authTabSignin" class="auth-tab active flex-1" onclick="switchAuthTab('signin')" data-i18n="auth_signin_tab"></div>
       <div id="authTabSignup" class="auth-tab flex-1" onclick="switchAuthTab('signup')" data-i18n="auth_signup_tab"></div>
     </div>
+    <div id="authRequiredNotice" class="hidden mx-5 mt-4 p-3 rounded-xl bg-flash/10 border border-flash/30">
+      <p class="text-sm font-semibold" data-i18n="auth_required_title"></p>
+      <p class="text-xs text-muted mt-1" data-i18n="auth_required_text"></p>
+    </div>
     <div class="p-5 space-y-4">
       <div id="authNameField" class="hidden">
         <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="auth_fullname"></label>
@@ -834,7 +751,11 @@ app.get('/', (req, res) => {
   </div>
 </div>
 
-<script>
+`;
+}
+
+function pageScript(productsWithStock, signatureWithStock) {
+  return `<script>
   const PRODUCTS = ${JSON.stringify(productsWithStock)};
   const SIGNATURE = ${JSON.stringify(signatureWithStock)};
   const EQUIPMENT = ${JSON.stringify(equipmentProducts)};
@@ -884,7 +805,16 @@ app.get('/', (req, res) => {
       label_left: "ta qoldi", label_out_of_stock: "Tugagan", only_left_badge: "Faqat",
       use_current_location: "Joriy manzilim", locating: "Aniqlanmoqda...",
       order_success_title: "Buyurtmangiz tasdiqlandi!", order_id_label: "Buyurtma raqami:", btn_close: "Yopish",
-      select_sizes_hint: "Har bir o'lcham uchun kerakli sonni kiriting"
+      select_sizes_hint: "Har bir o'lcham uchun kerakli sonni kiriting",
+      auth_required_title: "Avval ro'yxatdan o'ting yoki akkountingizga kiring",
+      auth_required_text: "Buyurtma berish uchun akkountingiz bo'lishi shart. Bu buyurtmangizni kuzatish va siz bilan bog'lanishni osonlashtiradi.",
+      about_mission_title: "Bizning maqsadimiz", about_mission_text: "Har bir futbolchi — havaskor bo'ladimi, professional bo'ladimi — sifatli va original jihozga arziydi. Biz shuning uchun ishlaymiz.",
+      about_value1_title: "100% Original", about_value1_text: "Barcha mahsulotlar faqat rasmiy distribyutorlardan olinadi, sohta mahsulot yo'q.",
+      about_value2_title: "Tez yetkazib berish", about_value2_text: "O'zbekiston bo'ylab 1-3 kun ichida buyurtmangiz manzilingizga yetkaziladi.",
+      about_value3_title: "Qulay to'lov", about_value3_text: "Naqd yoki karta orqali, siz uchun qulay bo'lgan usulda to'lang.",
+      about_stats_title: "Raqamlarda biz",
+      payment_method_label: "To'lov usuli", payment_cash: "Naqd pul", payment_card: "Plastik karta",
+      about_stat_customers: "Mijozlar", about_stat_models: "Model", about_stat_brands: "Brend"
     },
     ru: {
       hero_badge: "Оригинальное и премиум качество",
@@ -924,7 +854,16 @@ app.get('/', (req, res) => {
       label_left: "шт. осталось", label_out_of_stock: "Нет в наличии", only_left_badge: "Осталось всего",
       use_current_location: "Моё текущее местоположение", locating: "Определение...",
       order_success_title: "Ваш заказ подтверждён!", order_id_label: "Номер заказа:", btn_close: "Закрыть",
-      select_sizes_hint: "Введите нужное количество для каждого размера"
+      select_sizes_hint: "Введите нужное количество для каждого размера",
+      auth_required_title: "Сначала зарегистрируйтесь или войдите в аккаунт",
+      auth_required_text: "Для оформления заказа необходим аккаунт. Это упрощает отслеживание заказа и связь с вами.",
+      about_mission_title: "Наша миссия", about_mission_text: "Каждый футболист — любитель он или профессионал — заслуживает качественную и оригинальную экипировку. Именно для этого мы работаем.",
+      about_value1_title: "100% Оригинал", about_value1_text: "Вся продукция закупается только у официальных дистрибьюторов, никаких подделок.",
+      about_value2_title: "Быстрая доставка", about_value2_text: "Доставка по всему Узбекистану в течение 1-3 дней.",
+      about_value3_title: "Удобная оплата", about_value3_text: "Оплачивайте наличными или картой — как вам удобно.",
+      about_stats_title: "Мы в цифрах",
+      payment_method_label: "Способ оплаты", payment_cash: "Наличные", payment_card: "Банковская карта",
+      about_stat_customers: "Клиентов", about_stat_models: "Моделей", about_stat_brands: "Брендов"
     },
     en: {
       hero_badge: "Original & Premium Quality",
@@ -964,7 +903,16 @@ app.get('/', (req, res) => {
       label_left: "left", label_out_of_stock: "Out of stock", only_left_badge: "Only",
       use_current_location: "My current location", locating: "Locating...",
       order_success_title: "Your order is confirmed!", order_id_label: "Order ID:", btn_close: "Close",
-      select_sizes_hint: "Enter the quantity you need for each size"
+      select_sizes_hint: "Enter the quantity you need for each size",
+      auth_required_title: "Please sign up or sign in first",
+      auth_required_text: "An account is required to place an order. This makes it easier to track your order and get in touch with you.",
+      about_mission_title: "Our Mission", about_mission_text: "Every footballer — amateur or professional — deserves quality, authentic gear. That's what we're here for.",
+      about_value1_title: "100% Original", about_value1_text: "All products are sourced only from official distributors — no counterfeits.",
+      about_value2_title: "Fast Delivery", about_value2_text: "Delivery across Uzbekistan within 1-3 days.",
+      about_value3_title: "Easy Payment", about_value3_text: "Pay by cash or card — whichever suits you.",
+      about_stats_title: "Us In Numbers",
+      payment_method_label: "Payment Method", payment_cash: "Cash", payment_card: "Card",
+      about_stat_customers: "Customers", about_stat_models: "Models", about_stat_brands: "Brands"
     }
   };
 
@@ -1295,12 +1243,28 @@ app.get('/', (req, res) => {
   let deliveryMarker = null;
   let selectedLat = null;
   let selectedLng = null;
+  let selectedPayment = 'cash';
   const TASHKENT_CENTER = [41.2995, 69.2401];
+
+  function selectPayment(method) {
+    selectedPayment = method;
+    document.getElementById('payCashBtn').classList.toggle('selected', method === 'cash');
+    document.getElementById('payCardBtn').classList.toggle('selected', method === 'card');
+  }
 
   function openCheckout() {
     const cart = getCart();
     if (cart.length === 0) { alert(t('cart_empty')); return; }
+
+    if (!currentUser) {
+      closeCart();
+      openAuth(true);
+      return;
+    }
+
     document.getElementById('ckTotal').textContent = document.getElementById('cartTotal').textContent;
+    if (!document.getElementById('ckName').value) document.getElementById('ckName').value = currentUser.name;
+    selectPayment('cash');
     document.getElementById('checkoutOverlay').classList.remove('hidden');
 
     setTimeout(() => {
@@ -1376,7 +1340,7 @@ app.get('/', (req, res) => {
     fetch('/api/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, address, lat: selectedLat, lng: selectedLng, comment, cart })
+      body: JSON.stringify({ name, phone, address, lat: selectedLat, lng: selectedLng, comment, paymentMethod: selectedPayment, cart })
     })
       .then(r => r.json())
       .then(data => {
@@ -1390,6 +1354,9 @@ app.get('/', (req, res) => {
           document.getElementById('ckAddress').value = '';
           document.getElementById('ckComment').value = '';
           showOrderSuccess(data.orderId);
+        } else if (data.authRequired) {
+          closeCheckout();
+          openAuth(true);
         } else {
           alert(data.message || t('err_server'));
         }
@@ -1432,8 +1399,9 @@ app.get('/', (req, res) => {
     }
   }
 
-  function openAuth() {
+  function openAuth(requiredForOrder) {
     document.getElementById('authError').classList.add('hidden');
+    document.getElementById('authRequiredNotice').classList.toggle('hidden', !requiredForOrder);
     document.getElementById('authOverlay').classList.remove('hidden');
   }
   function closeAuth() { document.getElementById('authOverlay').classList.add('hidden'); }
@@ -1473,6 +1441,7 @@ app.get('/', (req, res) => {
         if (data.success) {
           currentUser = data.user;
           renderAuthArea();
+          const wasRequiredForOrder = !document.getElementById('authRequiredNotice').classList.contains('hidden');
           closeAuth();
           document.getElementById('authEmail').value = '';
           document.getElementById('authPassword').value = '';
@@ -1480,6 +1449,10 @@ app.get('/', (req, res) => {
           // Checkout formani login ma'lumotlari bilan avtomatik to'ldirish
           const ckName = document.getElementById('ckName');
           if (ckName && !ckName.value) ckName.value = currentUser.name;
+          // Agar login buyurtma berish sababli talab qilingan bo'lsa, checkoutni qayta ochamiz
+          if (wasRequiredForOrder && getCart().length > 0) {
+            setTimeout(() => openCheckout(), 200);
+          }
         } else {
           errEl.textContent = data.message || t('err_server');
           errEl.classList.remove('hidden');
@@ -1512,10 +1485,246 @@ app.get('/', (req, res) => {
   updateCartBadge();
   applyLanguage();
   checkAuth();
-</script>
 
-</body>
-</html>`);
+  // Joriy sahifani navbar'da faollashtirish
+  (function highlightActiveNav() {
+    const path = window.location.pathname;
+    let current = 'home';
+    if (path.startsWith('/signature')) current = 'signature';
+    else if (path.startsWith('/anjomlar')) current = 'anjomlar';
+    else if (path.startsWith('/katalog')) current = 'katalog';
+    else if (path.startsWith('/about')) current = 'about';
+    document.querySelectorAll('.navlink').forEach(a => {
+      a.classList.toggle('active', a.dataset.nav === current);
+    });
+  })();
+</script>
+`;
+}
+
+function pageWrap(title, desc, mainContent, productsWithStock, signatureWithStock) {
+  return pageHead(title, desc) + pageHeader() + mainContent + pageFooter() + pageModals() + pageScript(productsWithStock, signatureWithStock) + '\n</body>\n</html>';
+}
+
+
+function getProductsData() {
+  const stock = getStock();
+  const productsWithStock = products.map(p => Object.assign({}, p, { stock: stock[p.id] || {} }));
+  const signatureWithStock = signatureProducts.map(p => Object.assign({}, p, { stock: stock[p.id] || {} }));
+  return { productsWithStock, signatureWithStock };
+}
+
+app.get('/', (req, res) => {
+  const { productsWithStock, signatureWithStock } = getProductsData();
+  res.send(pageWrap(
+    'Elite Boots — Professional Futbol Butsilari',
+    "Elite Boots — Nike, Adidas, Puma va Mizuno original futbol butsilari.",
+    `<main>
+<section id="top" class="relative overflow-hidden">
+  <div class="absolute -top-32 -right-32 w-96 h-96 bg-flash/15 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="max-w-7xl mx-auto px-5 md:px-8 py-16 text-center relative z-10">
+    <span class="text-flash text-xs uppercase tracking-widest font-semibold" data-i18n="hero_badge"></span>
+    <h1 class="font-display font-bold text-4xl md:text-5xl uppercase mt-3 mb-4" data-i18n="hero_title"></h1>
+    <p class="text-muted max-w-xl mx-auto mb-8" data-i18n="hero_subtitle"></p>
+
+    <div class="flex flex-wrap gap-3 justify-center mb-10">
+      <a href="/katalog" class="bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2">
+        <span data-i18n="hero_cta_catalog"></span> <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a href="/signature" class="bg-surface border hover:border-flash transition-colors font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2" style="border-color:var(--c-border);">
+        <i class="fa-solid fa-star text-flash"></i> <span data-i18n="hero_cta_signature"></span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
+      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
+        <p class="font-display font-bold text-2xl text-flash">8+</p>
+        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_models"></p>
+      </div>
+      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
+        <p class="font-display font-bold text-2xl text-flash">100%</p>
+        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_original"></p>
+      </div>
+      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
+        <p class="font-display font-bold text-2xl text-flash">34-45</p>
+        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_sizes"></p>
+      </div>
+      <div class="bg-surface border rounded-2xl py-5 px-3" style="border-color:var(--c-border);">
+        <p class="font-display font-bold text-2xl text-flash">24/7</p>
+        <p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_support"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTBOL DUNYOSIDAN: maslahat/yangiliklar (bosh sahifadagi katalog o'rniga) -->
+<section class="max-w-7xl mx-auto px-5 md:px-8 py-14">
+  <div class="text-center mb-10">
+    <span class="text-flash text-xs uppercase tracking-widest font-semibold" data-i18n="news_badge"></span>
+    <h2 class="font-display font-bold text-3xl uppercase mt-2" data-i18n="news_title"></h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-ruler"></i></div>
+      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="news1_title"></h3>
+      <p class="text-muted text-sm" data-i18n="news1_desc"></p>
+    </div>
+    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-scale-balanced"></i></div>
+      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="news2_title"></h3>
+      <p class="text-muted text-sm" data-i18n="news2_desc"></p>
+    </div>
+    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-shoe-prints"></i></div>
+      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="news3_title"></h3>
+      <p class="text-muted text-sm" data-i18n="news3_desc"></p>
+    </div>
+  </div>
+</section>
+
+</main>
+`,
+    productsWithStock, signatureWithStock
+  ));
+});
+
+app.get('/katalog', (req, res) => {
+  const { productsWithStock, signatureWithStock } = getProductsData();
+  res.send(pageWrap(
+    'Kataloglar — Elite Boots',
+    "Nike, Adidas, Puma va Mizuno butsilari — barcha o'lchamlar 34-45.",
+    `<main>
+<section id="katalog" class="max-w-7xl mx-auto px-5 md:px-8 py-10">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div>
+      <h2 class="font-display font-bold text-2xl uppercase" data-i18n="catalog_title"></h2>
+      <p class="text-muted text-sm" data-i18n="catalog_subtitle"></p>
+    </div>
+    <span id="resultCount" class="bg-surface border rounded-full px-4 py-1.5 text-sm w-fit" style="border-color:var(--c-border);"></span>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-8">
+    <button class="brand-tab active" data-brand="all" onclick="filterBrand('all', this)">
+      <i class="fa-solid fa-border-all"></i> <span data-i18n="filter_all"></span>
+    </button>
+    <button class="brand-tab" data-brand="Nike" onclick="filterBrand('Nike', this)"><i class="fa-solid fa-check"></i> Nike</button>
+    <button class="brand-tab" data-brand="Adidas" onclick="filterBrand('Adidas', this)"><i class="fa-solid fa-star"></i> Adidas</button>
+    <button class="brand-tab" data-brand="Puma" onclick="filterBrand('Puma', this)"><i class="fa-solid fa-paw"></i> Puma</button>
+    <button class="brand-tab" data-brand="Mizuno" onclick="filterBrand('Mizuno', this)"><i class="fa-solid fa-bolt"></i> Mizuno</button>
+  </div>
+
+  <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+  <p id="emptyState" class="hidden text-center text-muted py-16" data-i18n="empty_state"></p>
+</section>
+
+</main>
+`,
+    productsWithStock, signatureWithStock
+  ));
+});
+
+app.get('/signature', (req, res) => {
+  const { productsWithStock, signatureWithStock } = getProductsData();
+  res.send(pageWrap(
+    'Mashhur futbolchilar edition\'lari — Elite Boots',
+    "Cheklangan seriyadagi maxsus signature butsilar.",
+    `<main>
+<!-- MASHHUR FUTBOLCHILAR EDITION -->
+<section id="signature" class="max-w-7xl mx-auto px-5 md:px-8 py-14">
+  <div class="mb-8">
+    <h2 class="font-display font-bold text-2xl uppercase" data-i18n="signature_title"></h2>
+    <p class="text-muted text-sm" data-i18n="signature_subtitle"></p>
+  </div>
+  <div id="signatureGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+</section>
+
+</main>
+`,
+    productsWithStock, signatureWithStock
+  ));
+});
+
+app.get('/anjomlar', (req, res) => {
+  const { productsWithStock, signatureWithStock } = getProductsData();
+  res.send(pageWrap(
+    'Futbol anjomlari — Elite Boots',
+    "To'plar, qo'lqoplar, formalar va boshqa futbol anjomlari.",
+    `<main>
+<!-- FUTBOL ANJOMLARI -->
+<section id="anjomlar" class="max-w-7xl mx-auto px-5 md:px-8 py-14">
+  <div class="mb-8">
+    <h2 class="font-display font-bold text-2xl uppercase" data-i18n="equipment_title"></h2>
+    <p class="text-muted text-sm" data-i18n="equipment_subtitle"></p>
+  </div>
+  <div class="flex flex-wrap gap-2 mb-8">
+    <button class="brand-tab active" data-cat="all" onclick="filterEquipment('all', this)"><span data-i18n="filter_all"></span></button>
+    <button class="brand-tab" data-cat="ball" onclick="filterEquipment('ball', this)" data-i18n="cat_ball"></button>
+    <button class="brand-tab" data-cat="gloves" onclick="filterEquipment('gloves', this)" data-i18n="cat_gloves"></button>
+    <button class="brand-tab" data-cat="jersey" onclick="filterEquipment('jersey', this)" data-i18n="cat_jersey"></button>
+    <button class="brand-tab" data-cat="socks" onclick="filterEquipment('socks', this)" data-i18n="cat_socks"></button>
+    <button class="brand-tab" data-cat="protection" onclick="filterEquipment('protection', this)" data-i18n="cat_protection"></button>
+  </div>
+  <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+</section>
+
+</main>
+`,
+    productsWithStock, signatureWithStock
+  ));
+});
+
+app.get('/about', (req, res) => {
+  const { productsWithStock, signatureWithStock } = getProductsData();
+  res.send(pageWrap(
+    'Biz haqimizda — Elite Boots',
+    "Elite Boots jamoasi haqida ma'lumot.",
+    `<main>
+<!-- BIZ HAQIMIZDA -->
+<section id="about" class="max-w-7xl mx-auto px-5 md:px-8 py-16">
+  <div class="bg-surface border rounded-3xl p-8 md:p-12 text-center mb-10" style="border-color:var(--c-border);">
+    <h2 class="font-display font-bold text-2xl md:text-3xl uppercase mb-4" data-i18n="about_title"></h2>
+    <p class="text-muted max-w-2xl mx-auto" data-i18n="about_text"></p>
+  </div>
+
+  <div class="bg-surface border rounded-3xl p-8 md:p-12 mb-10" style="border-color:var(--c-border);">
+    <h3 class="font-display font-bold text-xl uppercase mb-3" data-i18n="about_mission_title"></h3>
+    <p class="text-muted max-w-3xl" data-i18n="about_mission_text"></p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="about_value1_title"></h3>
+      <p class="text-muted text-sm" data-i18n="about_value1_text"></p>
+    </div>
+    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-truck-fast"></i></div>
+      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="about_value2_title"></h3>
+      <p class="text-muted text-sm" data-i18n="about_value2_text"></p>
+    </div>
+    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-wallet"></i></div>
+      <h3 class="font-display font-semibold text-lg mb-2" data-i18n="about_value3_title"></h3>
+      <p class="text-muted text-sm" data-i18n="about_value3_text"></p>
+    </div>
+  </div>
+
+  <div class="bg-surface border rounded-3xl p-8 md:p-12" style="border-color:var(--c-border);">
+    <h3 class="font-display font-bold text-xl uppercase mb-6 text-center" data-i18n="about_stats_title"></h3>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto text-center">
+      <div><p class="font-display font-bold text-3xl text-flash">1000+</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_customers"></p></div>
+      <div><p class="font-display font-bold text-3xl text-flash">18+</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_models"></p></div>
+      <div><p class="font-display font-bold text-3xl text-flash">100%</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_original"></p></div>
+      <div><p class="font-display font-bold text-3xl text-flash">4</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_brands"></p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+`,
+    productsWithStock, signatureWithStock
+  ));
 });
 
 app.listen(PORT, () => console.log('Server running on http://localhost:' + PORT));
