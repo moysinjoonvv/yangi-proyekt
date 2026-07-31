@@ -18,7 +18,7 @@ const TELEGRAM_USERNAME = 'Moysinjonvv';
 const USERS_FILE = path.join(__dirname, 'users.json');
 const SESSIONS_FILE = path.join(__dirname, 'sessions.json');
 const ORDERS_FILE = path.join(__dirname, 'orders.json');
-const ADMIN_KEY = process.env.ADMIN_KEY || 'flashboots2026';
+const ADMIN_KEY = process.env.ADMIN_KEY || 'EliteBoots';
 
 function readJSON(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -185,10 +185,10 @@ app.get('/admin/orders', (req, res) => {
       <td style="padding:12px;">${o.id}</td>
       <td style="padding:12px;">${new Date(o.date).toLocaleString('uz-UZ')}</td>
       <td style="padding:12px;">${o.name}</td>
-      <td style="padding:12px;"><a href="tel:${o.phone}" style="color:#FF3D2E;">${o.phone}</a></td>
+      <td style="padding:12px;"><a href="tel:${o.phone}" style="color:#1F5C34;">${o.phone}</a></td>
       <td style="padding:12px;max-width:260px;">${o.address}${o.lat ? ` <a href="https://www.google.com/maps?q=${o.lat},${o.lng}" target="_blank" style="color:#00B2FF;">(xaritada)</a>` : ''}</td>
       <td style="padding:12px;">${o.cart.map(i => i.name + ' ×' + i.qty + ' (razmer ' + i.size + ')').join('<br>')}</td>
-      <td style="padding:12px;font-weight:bold;color:#FF3D2E;">${o.total.toLocaleString('ru-RU').replace(/,/g,' ')} so'm</td>
+      <td style="padding:12px;font-weight:bold;color:#1F5C34;">${o.total.toLocaleString('ru-RU').replace(/,/g,' ')} so'm</td>
     </tr>`).join('');
 
   res.send(`<!DOCTYPE html>
@@ -423,12 +423,13 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flash Boots — Professional Futbol Butsilari</title>
-<meta name="description" content="Flash Boots — Nike, Adidas, Puma va Mizuno original futbol butsilari.">
+<title>Elite Boots — Professional Futbol Butsilari</title>
+<meta name="description" content="Elite Boots — Nike, Adidas, Puma va Mizuno original futbol butsilari.">
 <meta name="google-site-verification" content="osGraURC-Y5MRG12VYCnGuOzZm7wNwN1DwQeYqXpD8A" />
 <meta property="og:type" content="website">
-<meta property="og:title" content="Flash Boots — Professional Futbol Butsilari">
+<meta property="og:title" content="Elite Boots — Professional Futbol Butsilari">
 <meta property="og:url" content="https://yangi-proyekt.onrender.com/">
+<link rel="icon" type="image/png" href="/images/logo.png">
 
 <!-- Mavzu flashini oldini olish uchun eng erta ishga tushadigan skript -->
 <script>
@@ -451,7 +452,7 @@ app.get('/', (req, res) => {
       extend: {
         colors: {
           base: 'var(--c-bg)', surface: 'var(--c-surface)', surface2: 'var(--c-surface2)',
-          flash: '#FF3D2E', muted: 'var(--c-muted)'
+          flash: '#1F5C34', muted: 'var(--c-muted)'
         },
         fontFamily: { display: ['Oswald','sans-serif'], body: ['Inter','sans-serif'] }
       }
@@ -474,7 +475,7 @@ app.get('/', (req, res) => {
   .card-hover { transition: transform .3s ease, box-shadow .3s ease; }
   .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(255,61,46,.25); }
   .jersey-num { font-family:'Oswald',sans-serif; -webkit-text-stroke:1px rgba(0,0,0,.08); color: transparent; }
-  .size-btn.selected { background:#FF3D2E; color:#fff; border-color:#FF3D2E; }
+  .size-btn.selected { background:#1F5C34; color:#fff; border-color:#1F5C34; }
   .overlay { transition: opacity .25s ease; }
   .drawer { transition: transform .3s ease; }
   .brand-tab {
@@ -485,25 +486,28 @@ app.get('/', (req, res) => {
     font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em;
     transition: all .2s ease; cursor: pointer;
   }
-  .brand-tab:hover { border-color: #FF3D2E; color: var(--c-text); }
-  .brand-tab.active { background: #FF3D2E; border-color: #FF3D2E; color: #fff; }
+  .brand-tab:hover { border-color: #1F5C34; color: var(--c-text); }
+  .brand-tab.active { background: #1F5C34; border-color: #1F5C34; color: #fff; }
   .lang-btn {
     padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
     color: var(--c-muted); transition: all .2s ease; cursor: pointer;
   }
-  .lang-btn.active { background: #FF3D2E; color: #fff; }
+  .lang-btn.active { background: #1F5C34; color: #fff; }
   .lang-btn:hover:not(.active) { color: var(--c-text); }
   ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-thumb { background: #FF3D2E; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: #1F5C34; border-radius: 4px; }
   .auth-tab { padding: 10px; text-align:center; font-weight:600; font-size:14px; color: var(--c-muted); cursor:pointer; border-bottom: 2px solid transparent; }
-  .auth-tab.active { color: var(--c-text); border-color: #FF3D2E; }
+  .auth-tab.active { color: var(--c-text); border-color: #1F5C34; }
 </style>
 </head>
 <body class="font-body">
 
 <header class="sticky top-0 z-50 backdrop-blur-md border-b" style="background-color:color-mix(in srgb, var(--c-bg) 90%, transparent); border-color:var(--c-border);">
   <div class="max-w-7xl mx-auto px-5 md:px-8 flex items-center justify-between h-20">
-    <a href="#top" class="font-display font-bold text-2xl">FB FLASHBOOTS <span class="text-flash text-sm block font-body font-normal">Pro Sport Store</span></a>
+    <a href="#top" class="flex items-center gap-3 font-display font-bold text-2xl">
+      <img src="/images/logo.png" alt="Elite Boots" class="w-11 h-11 rounded-full object-cover">
+      EB ELITEBOOTS <span class="text-flash text-sm block font-body font-normal">Pro Sport Store</span>
+    </a>
 
     <div class="flex items-center gap-2 sm:gap-3">
       <!-- Til tanlash -->
@@ -576,7 +580,7 @@ app.get('/', (req, res) => {
     <p class="text-muted max-w-xl mx-auto mb-8" data-i18n="hero_subtitle"></p>
 
     <div class="flex flex-wrap gap-3 justify-center mb-10">
-      <a href="#katalog" class="bg-flash hover:bg-red-600 transition-colors text-white font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2">
+      <a href="#katalog" class="bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2">
         <span data-i18n="hero_cta_catalog"></span> <i class="fa-solid fa-arrow-right"></i>
       </a>
       <a href="#signature" class="bg-surface border hover:border-flash transition-colors font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2" style="border-color:var(--c-border);">
@@ -689,7 +693,7 @@ app.get('/', (req, res) => {
 
 
 <footer class="border-t py-8 text-center text-xs text-muted" style="border-color:var(--c-border);">
-  &copy; ${new Date().getFullYear()} Flash Boots Store. <span data-i18n="footer_rights"></span><br>
+  &copy; ${new Date().getFullYear()} Elite Boots Store. <span data-i18n="footer_rights"></span><br>
   <span data-i18n="footer_delivery"></span>
 </footer>
 
@@ -715,7 +719,7 @@ app.get('/', (req, res) => {
       <p class="text-xs text-muted mb-3" data-i18n="select_sizes_hint"></p>
       <div id="sizeOptions" class="space-y-2 mb-4"></div>
 
-      <button onclick="confirmAddToCart()" class="w-full bg-flash hover:bg-red-600 transition-colors text-white font-semibold py-3.5 rounded-full" data-i18n="btn_add_to_cart_confirm"></button>
+      <button onclick="confirmAddToCart()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full" data-i18n="btn_add_to_cart_confirm"></button>
     </div>
   </div>
 </div>
@@ -733,7 +737,7 @@ app.get('/', (req, res) => {
         <span class="text-muted" data-i18n="cart_total"></span>
         <span id="cartTotal" class="font-display font-bold text-flash text-2xl">0 so'm</span>
       </div>
-      <button onclick="openCheckout()" class="w-full bg-flash hover:bg-red-600 transition-colors text-white font-semibold py-3.5 rounded-full inline-flex items-center justify-center gap-2">
+      <button onclick="openCheckout()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full inline-flex items-center justify-center gap-2">
         <i class="fa-solid fa-truck-fast"></i> <span data-i18n="btn_order"></span>
       </button>
     </div>
@@ -775,7 +779,7 @@ app.get('/', (req, res) => {
       </div>
     </div>
     <div class="p-5 border-t shrink-0" style="border-color:var(--c-border);">
-      <button id="ckSubmitBtn" onclick="submitOrder()" class="w-full bg-flash hover:bg-red-600 transition-colors text-white font-semibold py-3.5 rounded-full inline-flex items-center justify-center gap-2">
+      <button id="ckSubmitBtn" onclick="submitOrder()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full inline-flex items-center justify-center gap-2">
         <i class="fa-solid fa-check"></i> <span data-i18n="btn_confirm_order"></span>
       </button>
     </div>
@@ -784,12 +788,12 @@ app.get('/', (req, res) => {
 
 <!-- BUYURTMA TASDIQLANDI OYNASI -->
 <div id="orderSuccessOverlay" class="overlay hidden fixed inset-0 backdrop-blur-sm z-[80] flex items-center justify-center p-4" style="background-color:var(--c-overlay);">
-  <div class="w-full sm:max-w-sm rounded-3xl overflow-hidden text-center relative" style="background: linear-gradient(160deg, #FF3D2E 0%, #ff7a3d 45%, #7b2ff7 100%);">
+  <div class="w-full sm:max-w-sm rounded-3xl overflow-hidden text-center relative" style="background: linear-gradient(160deg, #1F5C34 0%, #2D8659 50%, #163F24 100%);">
     <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 20%, white 0%, transparent 40%), radial-gradient(circle at 80% 80%, white 0%, transparent 40%);"></div>
     <div class="relative p-10">
       <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-white/20 flex items-center justify-center">
         <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center">
-          <i class="fa-solid fa-check text-3xl" style="color:#FF3D2E;"></i>
+          <i class="fa-solid fa-check text-3xl" style="color:#1F5C34;"></i>
         </div>
       </div>
       <h3 class="font-display font-bold text-2xl text-white uppercase mb-2" data-i18n="order_success_title"></h3>
@@ -825,7 +829,7 @@ app.get('/', (req, res) => {
         <input id="authPassword" type="password" class="w-full bg-surface2 border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-flash" style="border-color:var(--c-border);">
       </div>
       <p id="authError" class="text-flash text-sm hidden"></p>
-      <button id="authSubmitBtn" onclick="submitAuth()" class="w-full bg-flash hover:bg-red-600 transition-colors text-white font-semibold py-3.5 rounded-full" data-i18n="auth_signin_btn"></button>
+      <button id="authSubmitBtn" onclick="submitAuth()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full" data-i18n="auth_signin_btn"></button>
     </div>
   </div>
 </div>
@@ -876,7 +880,7 @@ app.get('/', (req, res) => {
       signature_title: "Mashhur futbolchilar edition'lari", signature_subtitle: "Cheklangan seriyadagi maxsus dizaynlar",
       equipment_title: "Futbol anjomlari", equipment_subtitle: "O'yin uchun kerakli barcha aksessuarlar",
       cat_ball: "To'plar", cat_gloves: "Qo'lqoplar", cat_jersey: "Formalar", cat_socks: "Paypoqlar", cat_protection: "Himoya vositalari",
-      about_title: "Biz haqimizda", about_text: "Flash Boots — O'zbekistondagi original futbol butsilari va anjomlari bo'yicha ishonchli do'kon. Biz faqat rasmiy distribyutorlardan olib kelingan, 100% original mahsulotlarni taklif qilamiz.",
+      about_title: "Biz haqimizda", about_text: "Elite Boots — O'zbekistondagi original futbol butsilari va anjomlari bo'yicha ishonchli do'kon. Biz faqat rasmiy distribyutorlardan olib kelingan, 100% original mahsulotlarni taklif qilamiz.",
       label_left: "ta qoldi", label_out_of_stock: "Tugagan", only_left_badge: "Faqat",
       use_current_location: "Joriy manzilim", locating: "Aniqlanmoqda...",
       order_success_title: "Buyurtmangiz tasdiqlandi!", order_id_label: "Buyurtma raqami:", btn_close: "Yopish",
@@ -916,7 +920,7 @@ app.get('/', (req, res) => {
       signature_title: "Именные модели известных футболистов", signature_subtitle: "Эксклюзивный дизайн ограниченной серии",
       equipment_title: "Футбольный инвентарь", equipment_subtitle: "Все аксессуары, необходимые для игры",
       cat_ball: "Мячи", cat_gloves: "Перчатки", cat_jersey: "Форма", cat_socks: "Гетры", cat_protection: "Защита",
-      about_title: "О нас", about_text: "Flash Boots — надёжный магазин оригинальных футбольных бутс и инвентаря в Узбекистане. Мы предлагаем только 100% оригинальную продукцию от официальных дистрибьюторов.",
+      about_title: "О нас", about_text: "Elite Boots — надёжный магазин оригинальных футбольных бутс и инвентаря в Узбекистане. Мы предлагаем только 100% оригинальную продукцию от официальных дистрибьюторов.",
       label_left: "шт. осталось", label_out_of_stock: "Нет в наличии", only_left_badge: "Осталось всего",
       use_current_location: "Моё текущее местоположение", locating: "Определение...",
       order_success_title: "Ваш заказ подтверждён!", order_id_label: "Номер заказа:", btn_close: "Закрыть",
@@ -956,7 +960,7 @@ app.get('/', (req, res) => {
       signature_title: "Signature Editions By Famous Players", signature_subtitle: "Exclusive limited-series designs",
       equipment_title: "Football Gear", equipment_subtitle: "Everything you need to play",
       cat_ball: "Balls", cat_gloves: "Gloves", cat_jersey: "Jerseys", cat_socks: "Socks", cat_protection: "Protection",
-      about_title: "About Us", about_text: "Flash Boots is a trusted store for original football boots and gear in Uzbekistan. We only offer 100% authentic products sourced from official distributors.",
+      about_title: "About Us", about_text: "Elite Boots is a trusted store for original football boots and gear in Uzbekistan. We only offer 100% authentic products sourced from official distributors.",
       label_left: "left", label_out_of_stock: "Out of stock", only_left_badge: "Only",
       use_current_location: "My current location", locating: "Locating...",
       order_success_title: "Your order is confirmed!", order_id_label: "Order ID:", btn_close: "Close",
@@ -1038,7 +1042,7 @@ app.get('/', (req, res) => {
           </div>
           \${hasDiscount && stockSum != null ? \`<p class="text-flash text-xs font-semibold mb-2"><i class="fa-solid fa-fire"></i> \${t('only_left_badge')} \${stockSum} \${t('label_left')}</p>\` : '<div class="mb-2"></div>'}
           <p class="text-xs text-muted mb-4">\${t('label_sizes')} \${p.minSize} – \${p.maxSize}</p>
-          <button onclick="openSizeModal('\${p.id}')" class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
+          <button onclick="openSizeModal('\${p.id}')" class="mt-auto bg-flash hover:bg-[#163F24] transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
             <i class="fa-solid fa-cart-plus"></i> \${t('btn_add_cart')}
           </button>
         </div>
@@ -1094,7 +1098,7 @@ app.get('/', (req, res) => {
             <p class="text-flash font-bold text-xl">\${fmt(p.price)} <span class="text-sm font-normal text-muted">so'm</span></p>
             \${hasDiscount ? \`<p class="text-muted text-sm line-through">\${fmt(p.oldPrice)}</p>\` : ''}
           </div>
-          <button onclick="addEquipmentToCart('\${p.id}')" class="mt-auto bg-flash hover:bg-red-600 transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
+          <button onclick="addEquipmentToCart('\${p.id}')" class="mt-auto bg-flash hover:bg-[#163F24] transition-colors text-white text-sm font-semibold text-center px-4 py-3 rounded-full inline-flex items-center justify-center gap-2">
             <i class="fa-solid fa-cart-plus"></i> \${t('btn_add_cart')}
           </button>
         </div>
