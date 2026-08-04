@@ -143,7 +143,7 @@ app.post('/api/order', (req, res) => {
     return res.status(401).json({ success: false, message: "Buyurtma berish uchun avval ro'yxatdan o'ting yoki akkountingizga kiring", authRequired: true });
   }
 
-  const { name, phone, address, lat, lng, comment, paymentMethod, cart } = req.body || {};
+  const { name, phone, address, lat, lng, comment, deliveryMethod, paymentMethod, paymentProvider, cart } = req.body || {};
   if (!name || !phone || !address || !Array.isArray(cart) || cart.length === 0) {
     return res.status(400).json({ success: false, message: "Ma'lumotlar to'liq emas" });
   }
@@ -171,7 +171,9 @@ app.post('/api/order', (req, res) => {
     userId: user.id,
     name, phone, address, lat: lat || null, lng: lng || null,
     comment: comment || '',
+    deliveryMethod: deliveryMethod === 'pickup' ? 'pickup' : 'home',
     paymentMethod: paymentMethod === 'card' ? 'card' : 'cash',
+    paymentProvider: paymentMethod === 'card' ? (paymentProvider || null) : null,
     cart, total
   };
   const orders = readJSON(ORDERS_FILE, []);
@@ -198,23 +200,28 @@ app.get('/admin/orders', (req, res) => {
         const label = found ? (found.i18n.uz.name) : i.id;
         return label + ' ×' + i.qty + (i.size != null ? ' (razmer ' + i.size + ')' : '');
       }).join('<br>')}</td>
-      <td style="padding:12px;">${o.paymentMethod === 'card' ? "💳 Karta" : "💵 Naqd"}</td>
+      <td style="padding:12px;">${o.deliveryMethod === 'pickup' ? "🏪 Do'kondan" : "🚚 Uyga"}</td>
+      <td style="padding:12px;">${o.paymentMethod === 'card' ? "💳 Karta" + (o.paymentProvider ? ' (' + o.paymentProvider + ')' : '') : "💵 Naqd"}</td>
       <td style="padding:12px;font-weight:bold;color:#1F5C34;">${o.total.toLocaleString('ru-RU').replace(/,/g,' ')} so'm</td>
     </tr>`).join('');
 
   res.send(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Buyurtmalar — Admin</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Buyurtmalar — Admin</title>
 <style>
-  body { background:#0B0B0D; color:#fff; font-family: sans-serif; padding: 30px; }
-  table { width:100%; border-collapse: collapse; font-size: 14px; }
-  th { text-align:left; padding:12px; background:#17181C; text-transform:uppercase; font-size:11px; letter-spacing:.05em; color:#8B8D93; }
+  body { background:#0B0B0D; color:#fff; font-family: sans-serif; padding: 16px; }
+  @media (min-width: 640px) { body { padding: 30px; } }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+  table { width:100%; min-width: 900px; border-collapse: collapse; font-size: 14px; }
+  th { text-align:left; padding:12px; background:#17181C; text-transform:uppercase; font-size:11px; letter-spacing:.05em; color:#8B8D93; white-space: nowrap; }
 </style></head>
 <body>
   <h1>Buyurtmalar (${orders.length})</h1>
+  <div class="table-wrap">
   <table>
-    <thead><tr><th>ID</th><th>Sana</th><th>Ism</th><th>Telefon</th><th>Manzil</th><th>Mahsulotlar</th><th>To'lov</th><th>Jami</th></tr></thead>
-    <tbody>${rows || '<tr><td style="padding:20px;" colspan="8">Hali buyurtma yo\'q</td></tr>'}</tbody>
+    <thead><tr><th>ID</th><th>Sana</th><th>Ism</th><th>Telefon</th><th>Manzil</th><th>Mahsulotlar</th><th>Yetkazish</th><th>To'lov</th><th>Jami</th></tr></thead>
+    <tbody>${rows || '<tr><td style="padding:20px;" colspan="9">Hali buyurtma yo\'q</td></tr>'}</tbody>
   </table>
+  </div>
 </body></html>`);
 });
 
@@ -484,6 +491,47 @@ function pageHead(title, desc) {
   html { scroll-behavior: smooth; }
   body { background-color: var(--c-bg); color: var(--c-text); transition: background-color .25s ease, color .25s ease; }
   .card-hover { transition: transform .3s ease, box-shadow .3s ease; }
+
+  /* ---- Umumiy hover animatsiyalari ---- */
+  button, a, .navlink, .lang-btn, .brand-tab, .payment-option, .provider-option, .pickup-option {
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease, border-color .2s ease, opacity .2s ease;
+  }
+  button:hover:not(:disabled), a:hover {
+    transform: translateY(-2px);
+  }
+  .brand-tab:hover, .payment-option:hover, .provider-option:hover, .pickup-option:hover, .lang-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px -6px rgba(0,0,0,.3);
+  }
+  /* Yumaloq ikonka tugmalar biroz kattalashadi, tepaga surilmaydi */
+  header button, header a.rounded-full {
+    transform: none !important;
+  }
+  header button:hover:not(:disabled), header a.rounded-full:hover {
+    transform: scale(1.08) !important;
+  }
+  .product-card img, .equipment-card img {
+    transition: transform .4s ease;
+  }
+  .product-card:hover img, .equipment-card:hover img {
+    transform: scale(1.06);
+  }
+  input:focus, textarea:focus {
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .size-qty-minus:hover, .size-qty-plus:hover {
+    background: #1F5C34 !important;
+    color: #fff;
+  }
+  #stickyAddBar { animation: slideDown .25s ease; }
+  @keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
   .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(255,61,46,.25); }
   .jersey-num { font-family:'Oswald',sans-serif; -webkit-text-stroke:1px rgba(0,0,0,.08); color: transparent; }
   .size-btn.selected { background:#1F5C34; color:#fff; border-color:#1F5C34; }
@@ -501,6 +549,10 @@ function pageHead(title, desc) {
   .brand-tab.active { background: #1F5C34; border-color: #1F5C34; color: #fff; }
   .payment-option { background: var(--c-surface2); color: var(--c-muted); }
   .payment-option.selected { background: #1F5C34; border-color: #1F5C34 !important; color: #fff; }
+  .provider-option { background: var(--c-surface2); }
+  .provider-option.selected { border-color: #1F5C34 !important; box-shadow: 0 0 0 2px #1F5C34; }
+  .pickup-option { background: var(--c-surface2); }
+  .pickup-option.selected { border-color: #1F5C34 !important; box-shadow: 0 0 0 2px #1F5C34; }
   .lang-btn {
     padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
     color: var(--c-muted); transition: all .2s ease; cursor: pointer;
@@ -522,12 +574,12 @@ function pageHeader() {
 
 <header class="sticky top-0 z-50 backdrop-blur-md border-b" style="background-color:color-mix(in srgb, var(--c-bg) 90%, transparent); border-color:var(--c-border);">
   <div class="max-w-7xl mx-auto px-5 md:px-8 flex items-center justify-between h-20">
-    <a href="/" class="flex items-center gap-3 font-display font-bold text-2xl">
-      <img src="/images/logo.png" alt="Elite Boots" class="w-11 h-11 rounded-full object-cover">
-      EB ELITEBOOTS <span class="text-flash text-sm block font-body font-normal">Pro Sport Store</span>
+    <a href="/" class="flex items-center gap-2 sm:gap-3 font-display font-bold text-lg sm:text-2xl min-w-0 flex-shrink mr-2">
+      <img src="/images/logo.png" alt="Elite Boots" class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0">
+      <span class="truncate">EB ELITEBOOTS <span class="text-flash text-sm hidden sm:block font-body font-normal">Pro Sport Store</span></span>
     </a>
 
-    <div class="flex items-center gap-2 sm:gap-3">
+    <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
       <!-- Til tanlash -->
       <div class="hidden sm:flex items-center gap-1 bg-surface border rounded-full px-1.5 py-1" style="border-color:var(--c-border);">
         <button class="lang-btn active" id="langBtnUz" onclick="setLang('uz')">UZ</button>
@@ -606,6 +658,13 @@ function pageModals() {
       <h3 class="font-display font-semibold text-lg" data-i18n="modal_choose_size"></h3>
       <button onclick="closeSizeModal()" class="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
+
+    <!-- Tanlov qilinganda tepada chiqadigan "yopishqoq" tasdiqlash paneli -->
+    <div id="stickyAddBar" class="hidden shrink-0 px-5 py-3 border-b flex items-center justify-between gap-3 bg-flash text-white" style="border-color:var(--c-border);">
+      <span id="stickyAddBarText" class="text-sm font-semibold"></span>
+      <button onclick="confirmAddToCart()" class="bg-white text-black text-sm font-bold px-4 py-2 rounded-full hover:bg-white/90 transition-colors shrink-0" data-i18n="btn_add_to_cart_confirm"></button>
+    </div>
+
     <div class="p-5 overflow-y-auto">
       <div class="flex gap-4 items-center mb-5">
         <img id="modalImg" src="" alt="" class="w-24 h-24 object-contain bg-white rounded-xl p-2">
@@ -663,6 +722,18 @@ function pageModals() {
         <input id="ckPhone" type="tel" placeholder="+998 90 123 45 67" class="w-full bg-surface2 border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-flash" style="border-color:var(--c-border);">
       </div>
       <div>
+        <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="delivery_method_label"></label>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <button type="button" id="delHomeBtn" onclick="selectDeliveryMethod('home')" class="payment-option flex items-center justify-center gap-2 border rounded-xl py-3 text-sm font-semibold transition-colors" style="border-color:var(--c-border);">
+            <i class="fa-solid fa-house"></i> <span data-i18n="delivery_home"></span>
+          </button>
+          <button type="button" id="delPickupBtn" onclick="selectDeliveryMethod('pickup')" class="payment-option flex items-center justify-center gap-2 border rounded-xl py-3 text-sm font-semibold transition-colors" style="border-color:var(--c-border);">
+            <i class="fa-solid fa-store"></i> <span data-i18n="delivery_pickup"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="homeDeliveryFields">
         <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="label_address"></label>
         <button type="button" onclick="useCurrentLocation()" class="mb-2 inline-flex items-center gap-2 bg-surface2 border rounded-full px-4 py-2 text-xs font-semibold hover:border-flash transition-colors" style="border-color:var(--c-border);">
           <i class="fa-solid fa-location-crosshairs text-flash"></i> <span id="locBtnLabel" data-i18n="use_current_location"></span>
@@ -670,6 +741,24 @@ function pageModals() {
         <div id="deliveryMap" class="w-full h-64 rounded-xl overflow-hidden border" style="border-color:var(--c-border);"></div>
         <p class="text-xs text-muted mt-2" data-i18n="map_hint"></p>
         <input id="ckAddress" type="text" class="w-full mt-2 bg-surface2 border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-flash" style="border-color:var(--c-border);">
+      </div>
+
+      <div id="pickupFields" class="hidden">
+        <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="pickup_choose_label"></label>
+        <div class="space-y-2">
+          <button type="button" class="pickup-option w-full text-left border rounded-xl px-4 py-3 transition-colors" style="border-color:var(--c-border);" onclick="selectPickupPoint('Chilonzor filiali — Bunyodkor ko\\'chasi, 12', this)">
+            <span class="font-semibold text-sm block">Chilonzor filiali</span>
+            <span class="text-xs text-muted">Bunyodkor ko'chasi, 12</span>
+          </button>
+          <button type="button" class="pickup-option w-full text-left border rounded-xl px-4 py-3 transition-colors" style="border-color:var(--c-border);" onclick="selectPickupPoint('Yunusobod filiali — Amir Temur ko\\'chasi, 45', this)">
+            <span class="font-semibold text-sm block">Yunusobod filiali</span>
+            <span class="text-xs text-muted">Amir Temur ko'chasi, 45</span>
+          </button>
+          <button type="button" class="pickup-option w-full text-left border rounded-xl px-4 py-3 transition-colors" style="border-color:var(--c-border);" onclick="selectPickupPoint('Sergeli filiali — Qatortol ko\\'chasi, 8', this)">
+            <span class="font-semibold text-sm block">Sergeli filiali</span>
+            <span class="text-xs text-muted">Qatortol ko'chasi, 8</span>
+          </button>
+        </div>
       </div>
       <div>
         <label class="text-xs uppercase tracking-wider text-muted mb-1.5 block" data-i18n="label_comment"></label>
@@ -684,6 +773,24 @@ function pageModals() {
           <button type="button" id="payCardBtn" onclick="selectPayment('card')" class="payment-option flex items-center justify-center gap-2 border rounded-xl py-3 text-sm font-semibold transition-colors" style="border-color:var(--c-border);">
             <i class="fa-solid fa-credit-card"></i> <span data-i18n="payment_card"></span>
           </button>
+        </div>
+
+        <div id="cardProviders" class="hidden mt-3">
+          <p class="text-xs text-muted mb-2" data-i18n="payment_provider_hint"></p>
+          <div class="grid grid-cols-3 gap-3">
+            <button type="button" class="provider-option flex flex-col items-center justify-center gap-1.5 border rounded-xl py-3 transition-colors" style="border-color:var(--c-border);" onclick="selectProvider('payme', this)">
+              <span class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs" style="background:#00CDBA;">P</span>
+              <span class="text-xs font-semibold">Payme</span>
+            </button>
+            <button type="button" class="provider-option flex flex-col items-center justify-center gap-1.5 border rounded-xl py-3 transition-colors" style="border-color:var(--c-border);" onclick="selectProvider('paynet', this)">
+              <span class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs" style="background:#F5821F;">PN</span>
+              <span class="text-xs font-semibold">Paynet</span>
+            </button>
+            <button type="button" class="provider-option flex flex-col items-center justify-center gap-1.5 border rounded-xl py-3 transition-colors" style="border-color:var(--c-border);" onclick="selectProvider('uzum', this)">
+              <span class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs" style="background:#7C3AED;">U</span>
+              <span class="text-xs font-semibold">Uzum Bank</span>
+            </button>
+          </div>
         </div>
       </div>
       <div class="bg-surface2 rounded-xl p-4 flex items-center justify-between">
@@ -814,7 +921,10 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_value3_title: "Qulay to'lov", about_value3_text: "Naqd yoki karta orqali, siz uchun qulay bo'lgan usulda to'lang.",
       about_stats_title: "Raqamlarda biz",
       payment_method_label: "To'lov usuli", payment_cash: "Naqd pul", payment_card: "Plastik karta",
-      about_stat_customers: "Mijozlar", about_stat_models: "Model", about_stat_brands: "Brend"
+      about_stat_customers: "Mijozlar", about_stat_models: "Model", about_stat_brands: "Brend",
+      payment_provider_hint: "To'lov tizimini tanlang", choose_provider_alert: "Iltimos, to'lov tizimini tanlang",
+      delivery_method_label: "Yetkazib berish usuli", delivery_home: "Uygacha yetkazib berish", delivery_pickup: "Do'kondan olib ketish",
+      pickup_choose_label: "Filialni tanlang", choose_pickup_alert: "Iltimos, filialni tanlang"
     },
     ru: {
       hero_badge: "Оригинальное и премиум качество",
@@ -863,7 +973,10 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_value3_title: "Удобная оплата", about_value3_text: "Оплачивайте наличными или картой — как вам удобно.",
       about_stats_title: "Мы в цифрах",
       payment_method_label: "Способ оплаты", payment_cash: "Наличные", payment_card: "Банковская карта",
-      about_stat_customers: "Клиентов", about_stat_models: "Моделей", about_stat_brands: "Брендов"
+      about_stat_customers: "Клиентов", about_stat_models: "Моделей", about_stat_brands: "Брендов",
+      payment_provider_hint: "Выберите платёжную систему", choose_provider_alert: "Пожалуйста, выберите платёжную систему",
+      delivery_method_label: "Способ доставки", delivery_home: "Доставка на дом", delivery_pickup: "Самовывоз из магазина",
+      pickup_choose_label: "Выберите филиал", choose_pickup_alert: "Пожалуйста, выберите филиал"
     },
     en: {
       hero_badge: "Original & Premium Quality",
@@ -912,7 +1025,10 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_value3_title: "Easy Payment", about_value3_text: "Pay by cash or card — whichever suits you.",
       about_stats_title: "Us In Numbers",
       payment_method_label: "Payment Method", payment_cash: "Cash", payment_card: "Card",
-      about_stat_customers: "Customers", about_stat_models: "Models", about_stat_brands: "Brands"
+      about_stat_customers: "Customers", about_stat_models: "Models", about_stat_brands: "Brands",
+      payment_provider_hint: "Choose a payment system", choose_provider_alert: "Please choose a payment system",
+      delivery_method_label: "Delivery Method", delivery_home: "Home Delivery", delivery_pickup: "Pickup From Store",
+      pickup_choose_label: "Choose a branch", choose_pickup_alert: "Please choose a branch"
     }
   };
 
@@ -1112,6 +1228,7 @@ function pageScript(productsWithStock, signatureWithStock) {
     if (!p) return;
     const info = p.i18n[currentLang] || p.i18n.uz;
     currentModalProduct = p;
+    document.getElementById('stickyAddBar').classList.add('hidden');
 
     document.getElementById('modalImg').src = p.img;
     document.getElementById('modalImg').alt = info.name;
@@ -1135,7 +1252,7 @@ function pageScript(productsWithStock, signatureWithStock) {
       row.innerHTML = \`
         <div>
           <span class="font-semibold">\${s}</span>
-          <span class="text-xs \${isOut ? 'text-flash' : 'text-muted'} ml-2">\${isOut ? t('label_out_of_stock') : available + ' ' + t('label_left')}</span>
+          <span class="stock-label text-xs \${isOut ? 'text-flash' : 'text-muted'} ml-2">\${isOut ? t('label_out_of_stock') : available + ' ' + t('label_left')}</span>
         </div>
         <div class="flex items-center gap-2 bg-surface rounded-full px-2 py-1">
           <button type="button" class="size-qty-minus w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center" \${isOut ? 'disabled' : ''}>−</button>
@@ -1145,16 +1262,36 @@ function pageScript(productsWithStock, signatureWithStock) {
       row.dataset.size = s;
       row.dataset.max = available;
       const valueEl = row.querySelector('.size-qty-value');
+      const stockLabelEl = row.querySelector('.stock-label');
+
+      function refreshStockLabel() {
+        const chosen = parseInt(valueEl.textContent, 10);
+        const remaining = available - chosen;
+        if (remaining <= 0) {
+          stockLabelEl.textContent = t('label_out_of_stock');
+          stockLabelEl.classList.add('text-flash');
+          stockLabelEl.classList.remove('text-muted');
+        } else {
+          stockLabelEl.textContent = remaining + ' ' + t('label_left');
+          stockLabelEl.classList.remove('text-flash');
+          stockLabelEl.classList.add('text-muted');
+        }
+      }
+
       row.querySelector('.size-qty-minus').onclick = () => {
         let v = parseInt(valueEl.textContent, 10);
         v = Math.max(0, v - 1);
         valueEl.textContent = v;
+        refreshStockLabel();
+        updateStickyAddBar();
       };
       row.querySelector('.size-qty-plus').onclick = () => {
         let v = parseInt(valueEl.textContent, 10);
         const max = parseInt(row.dataset.max, 10);
         v = Math.min(max, v + 1);
         valueEl.textContent = v;
+        refreshStockLabel();
+        updateStickyAddBar();
       };
       sizeBox.appendChild(row);
     }
@@ -1163,6 +1300,24 @@ function pageScript(productsWithStock, signatureWithStock) {
   }
 
   function closeSizeModal() { document.getElementById('sizeModalOverlay').classList.add('hidden'); }
+
+  function updateStickyAddBar() {
+    const rows = document.querySelectorAll('#sizeOptions > div');
+    let totalQty = 0;
+    let totalSum = 0;
+    rows.forEach(row => {
+      const qty = parseInt(row.querySelector('.size-qty-value').textContent, 10) || 0;
+      totalQty += qty;
+      totalSum += qty * (currentModalProduct ? currentModalProduct.price : 0);
+    });
+    const bar = document.getElementById('stickyAddBar');
+    if (totalQty > 0) {
+      document.getElementById('stickyAddBarText').textContent = totalQty + ' × — ' + fmt(totalSum) + " so'm";
+      bar.classList.remove('hidden');
+    } else {
+      bar.classList.add('hidden');
+    }
+  }
 
   function confirmAddToCart() {
     const rows = document.querySelectorAll('#sizeOptions > div');
@@ -1244,12 +1399,44 @@ function pageScript(productsWithStock, signatureWithStock) {
   let selectedLat = null;
   let selectedLng = null;
   let selectedPayment = 'cash';
+  let selectedProvider = null;
   const TASHKENT_CENTER = [41.2995, 69.2401];
 
   function selectPayment(method) {
     selectedPayment = method;
     document.getElementById('payCashBtn').classList.toggle('selected', method === 'cash');
     document.getElementById('payCardBtn').classList.toggle('selected', method === 'card');
+    document.getElementById('cardProviders').classList.toggle('hidden', method !== 'card');
+    if (method === 'cash') {
+      selectedProvider = null;
+      document.querySelectorAll('.provider-option').forEach(b => b.classList.remove('selected'));
+    }
+  }
+
+  function selectProvider(provider, btnEl) {
+    selectedProvider = provider;
+    document.querySelectorAll('.provider-option').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected');
+  }
+
+  let selectedDeliveryMethod = 'home';
+  let selectedPickupPoint = null;
+
+  function selectDeliveryMethod(method) {
+    selectedDeliveryMethod = method;
+    document.getElementById('delHomeBtn').classList.toggle('selected', method === 'home');
+    document.getElementById('delPickupBtn').classList.toggle('selected', method === 'pickup');
+    document.getElementById('homeDeliveryFields').classList.toggle('hidden', method !== 'home');
+    document.getElementById('pickupFields').classList.toggle('hidden', method !== 'pickup');
+    if (method === 'pickup' && deliveryMap) {
+      setTimeout(() => deliveryMap.invalidateSize(), 50);
+    }
+  }
+
+  function selectPickupPoint(address, btnEl) {
+    selectedPickupPoint = address;
+    document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected');
   }
 
   function openCheckout() {
@@ -1265,6 +1452,7 @@ function pageScript(productsWithStock, signatureWithStock) {
     document.getElementById('ckTotal').textContent = document.getElementById('cartTotal').textContent;
     if (!document.getElementById('ckName').value) document.getElementById('ckName').value = currentUser.name;
     selectPayment('cash');
+    selectDeliveryMethod('home');
     document.getElementById('checkoutOverlay').classList.remove('hidden');
 
     setTimeout(() => {
@@ -1327,12 +1515,22 @@ function pageScript(productsWithStock, signatureWithStock) {
   function submitOrder() {
     const name = document.getElementById('ckName').value.trim();
     const phone = document.getElementById('ckPhone').value.trim();
-    const address = document.getElementById('ckAddress').value.trim();
     const comment = document.getElementById('ckComment').value.trim();
     const cart = getCart();
 
+    let address, lat, lng;
+    if (selectedDeliveryMethod === 'pickup') {
+      if (!selectedPickupPoint) { alert(t('choose_pickup_alert')); return; }
+      address = selectedPickupPoint;
+      lat = null; lng = null;
+    } else {
+      address = document.getElementById('ckAddress').value.trim();
+      lat = selectedLat; lng = selectedLng;
+    }
+
     if (!name || !phone || !address) { alert(t('err_fill_all')); return; }
     if (cart.length === 0) { alert(t('cart_empty')); return; }
+    if (selectedPayment === 'card' && !selectedProvider) { alert(t('choose_provider_alert')); return; }
 
     const btn = document.getElementById('ckSubmitBtn');
     btn.disabled = true;
@@ -1340,7 +1538,7 @@ function pageScript(productsWithStock, signatureWithStock) {
     fetch('/api/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, address, lat: selectedLat, lng: selectedLng, comment, paymentMethod: selectedPayment, cart })
+      body: JSON.stringify({ name, phone, address, lat, lng, comment, deliveryMethod: selectedDeliveryMethod, paymentMethod: selectedPayment, paymentProvider: selectedProvider, cart })
     })
       .then(r => r.json())
       .then(data => {
