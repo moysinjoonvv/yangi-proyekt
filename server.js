@@ -187,8 +187,8 @@ app.get('/admin/orders', (req, res) => {
     return res.status(403).send('<body style="background:#0B0B0D;color:#fff;font-family:sans-serif;padding:40px;">Ruxsat yo\'q — to\'g\'ri kalit (?key=...) kerak.</body>');
   }
   const orders = readJSON(ORDERS_FILE, []);
-  const rows = orders.map(o => `
-    <tr style="border-bottom:1px solid #2a2a2e;">
+  const rows = orders.map((o, idx) => `
+    <tr class="order-row" style="border-bottom:1px solid #2a2a2e; animation-delay:${Math.min(idx * 0.04, 1)}s;">
       <td style="padding:12px;">${o.id}</td>
       <td style="padding:12px;">${new Date(o.date).toLocaleString('uz-UZ')}</td>
       <td style="padding:12px;">${o.name}</td>
@@ -210,9 +210,17 @@ app.get('/admin/orders', (req, res) => {
 <style>
   body { background:#0B0B0D; color:#fff; font-family: sans-serif; padding: 16px; }
   @media (min-width: 640px) { body { padding: 30px; } }
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; opacity: 0; animation: fadeInUp .6s ease .15s forwards; }
   table { width:100%; min-width: 900px; border-collapse: collapse; font-size: 14px; }
   th { text-align:left; padding:12px; background:#17181C; text-transform:uppercase; font-size:11px; letter-spacing:.05em; color:#8B8D93; white-space: nowrap; }
+  h1 { opacity: 0; animation: fadeInDown .5s ease forwards; }
+  .order-row { opacity: 0; animation: fadeInUp .45s ease forwards; transition: background-color .15s ease; }
+  .order-row:hover { background-color: #17181C; }
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    *, .table-wrap, h1, .order-row { animation: none !important; opacity: 1 !important; transform: none !important; }
+  }
 </style></head>
 <body>
   <h1>Buyurtmalar (${orders.length})</h1>
@@ -528,8 +536,18 @@ function pageHead(title, desc) {
     from { transform: translateY(-100%); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
   }
 
   .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(255,61,46,.25); }
@@ -922,6 +940,13 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_stats_title: "Raqamlarda biz",
       payment_method_label: "To'lov usuli", payment_cash: "Naqd pul", payment_card: "Plastik karta",
       about_stat_customers: "Mijozlar", about_stat_models: "Model", about_stat_brands: "Brend",
+      about_badge: "Bizning yo'limiz",
+      about_story_title: "Bizning hikoyamiz", about_story_text: "Elite Boots — bir nechta futbol ishqibozining oddiy g'oyasidan boshlangan: O'zbekistonda original butsi topish nima uchun bunchalik qiyin bo'lishi kerak? Shu savoldan kelib chiqib, biz faqat rasmiy manbalardan mahsulot olib keladigan, mijozga halol munosabatda bo'ladigan do'kon qurdik. Bugun bizga minglab futbolchilar ishonadi — va bu ishonchni har bir buyurtmada oqlashga harakat qilamiz.",
+      about_timeline_title: "Bizning yo'limiz",
+      about_tl1_title: "Kichik boshlanish", about_tl1_text: "Bir nechta model bilan onlayn savdoni boshladik.",
+      about_tl2_title: "Birinchi filial", about_tl2_text: "Toshkentda birinchi jismoniy do'konimizni ochdik.",
+      about_tl3_title: "1000+ mijoz", about_tl3_text: "Mingdan ortiq mamnun mijozga xizmat ko'rsatdik.",
+      about_tl4_title: "Signature va yangi bo'limlar", about_tl4_text: "Maxsus edition butsilar va futbol anjomlari bo'limini ishga tushirdik."
       payment_provider_hint: "To'lov tizimini tanlang", choose_provider_alert: "Iltimos, to'lov tizimini tanlang",
       delivery_method_label: "Yetkazib berish usuli", delivery_home: "Uygacha yetkazib berish", delivery_pickup: "Do'kondan olib ketish",
       pickup_choose_label: "Filialni tanlang", choose_pickup_alert: "Iltimos, filialni tanlang"
@@ -974,6 +999,13 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_stats_title: "Мы в цифрах",
       payment_method_label: "Способ оплаты", payment_cash: "Наличные", payment_card: "Банковская карта",
       about_stat_customers: "Клиентов", about_stat_models: "Моделей", about_stat_brands: "Брендов",
+      about_badge: "Наш путь",
+      about_story_title: "Наша история", about_story_text: "Elite Boots начался с простой идеи нескольких любителей футбола: почему найти оригинальные бутсы в Узбекистане должно быть так сложно? Именно поэтому мы создали магазин, который закупает товар только у официальных источников и честно относится к покупателям. Сегодня нам доверяют тысячи футболистов — и мы стараемся оправдывать это доверие с каждым заказом.",
+      about_timeline_title: "Наш путь",
+      about_tl1_title: "Скромное начало", about_tl1_text: "Начали онлайн-продажи с нескольких моделей.",
+      about_tl2_title: "Первый филиал", about_tl2_text: "Открыли первый физический магазин в Ташкенте.",
+      about_tl3_title: "1000+ клиентов", about_tl3_text: "Обслужили более тысячи довольных клиентов.",
+      about_tl4_title: "Именные модели и новые разделы", about_tl4_text: "Запустили линейку именных бутс и раздел футбольного инвентаря."
       payment_provider_hint: "Выберите платёжную систему", choose_provider_alert: "Пожалуйста, выберите платёжную систему",
       delivery_method_label: "Способ доставки", delivery_home: "Доставка на дом", delivery_pickup: "Самовывоз из магазина",
       pickup_choose_label: "Выберите филиал", choose_pickup_alert: "Пожалуйста, выберите филиал"
@@ -1026,6 +1058,13 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_stats_title: "Us In Numbers",
       payment_method_label: "Payment Method", payment_cash: "Cash", payment_card: "Card",
       about_stat_customers: "Customers", about_stat_models: "Models", about_stat_brands: "Brands",
+      about_badge: "Our Journey",
+      about_story_title: "Our Story", about_story_text: "Elite Boots started with a simple idea from a few football fans: why should finding original boots in Uzbekistan be so hard? That's why we built a store that sources only from official channels and treats every customer honestly. Today thousands of players trust us — and we work to earn that trust with every order.",
+      about_timeline_title: "Our Journey",
+      about_tl1_title: "A Small Start", about_tl1_text: "Began online sales with just a handful of models.",
+      about_tl2_title: "First Branch", about_tl2_text: "Opened our first physical store in Tashkent.",
+      about_tl3_title: "1000+ Customers", about_tl3_text: "Served over a thousand happy customers.",
+      about_tl4_title: "Signature Line & New Sections", about_tl4_text: "Launched signature edition boots and the football gear section."
       payment_provider_hint: "Choose a payment system", choose_provider_alert: "Please choose a payment system",
       delivery_method_label: "Delivery Method", delivery_home: "Home Delivery", delivery_pickup: "Pickup From Store",
       pickup_choose_label: "Choose a branch", choose_pickup_alert: "Please choose a branch"
@@ -1696,6 +1735,57 @@ function pageScript(productsWithStock, signatureWithStock) {
       a.classList.toggle('active', a.dataset.nav === current);
     });
   })();
+
+  // Sahifa aylantirilganda paydo bo'ladigan animatsiyalar (.reveal elementlar)
+  (function initRevealAnimations() {
+    const items = document.querySelectorAll('.reveal');
+    if (!items.length) return;
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(el => el.classList.add('visible'));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    items.forEach(el => observer.observe(el));
+  })();
+
+  // Raqamlarni 0 dan maqsadgacha animatsiyali sanash (.count-up elementlar)
+  (function initCountUp() {
+    const items = document.querySelectorAll('.count-up');
+    if (!items.length) return;
+    function animateCount(el) {
+      const target = parseInt(el.dataset.target, 10) || 0;
+      const suffix = el.dataset.suffix || '';
+      const duration = 1200;
+      const start = performance.now();
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(animateCount);
+      return;
+    }
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          countObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    items.forEach(el => countObserver.observe(el));
+  })();
 </script>
 `;
 }
@@ -1880,41 +1970,103 @@ app.get('/about', (req, res) => {
     `<main>
 <!-- BIZ HAQIMIZDA -->
 <section id="about" class="max-w-7xl mx-auto px-5 md:px-8 py-16">
-  <div class="bg-surface border rounded-3xl p-8 md:p-12 text-center mb-10" style="border-color:var(--c-border);">
-    <h2 class="font-display font-bold text-2xl md:text-3xl uppercase mb-4" data-i18n="about_title"></h2>
-    <p class="text-muted max-w-2xl mx-auto" data-i18n="about_text"></p>
+
+  <!-- Intro banner -->
+  <div class="reveal relative overflow-hidden bg-surface border rounded-3xl p-8 md:p-16 text-center mb-10" style="border-color:var(--c-border);">
+    <div class="absolute -top-24 -right-24 w-72 h-72 bg-flash/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-sky-400/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative z-10">
+      <span class="text-flash text-xs uppercase tracking-widest font-semibold" data-i18n="about_badge"></span>
+      <h2 class="font-display font-bold text-3xl md:text-4xl uppercase mt-3 mb-4" data-i18n="about_title"></h2>
+      <p class="text-muted max-w-2xl mx-auto" data-i18n="about_text"></p>
+    </div>
   </div>
 
-  <div class="bg-surface border rounded-3xl p-8 md:p-12 mb-10" style="border-color:var(--c-border);">
-    <h3 class="font-display font-bold text-xl uppercase mb-3" data-i18n="about_mission_title"></h3>
-    <p class="text-muted max-w-3xl" data-i18n="about_mission_text"></p>
+  <!-- Bizning hikoyamiz -->
+  <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 items-stretch">
+    <div class="bg-surface border rounded-3xl p-8 md:p-10" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-book-open"></i></div>
+      <h3 class="font-display font-bold text-xl uppercase mb-3" data-i18n="about_story_title"></h3>
+      <p class="text-muted text-sm leading-relaxed" data-i18n="about_story_text"></p>
+    </div>
+    <div class="bg-surface border rounded-3xl p-8 md:p-10" style="border-color:var(--c-border);">
+      <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-bullseye"></i></div>
+      <h3 class="font-display font-bold text-xl uppercase mb-3" data-i18n="about_mission_title"></h3>
+      <p class="text-muted text-sm leading-relaxed" data-i18n="about_mission_text"></p>
+    </div>
   </div>
 
+  <!-- Vaqt jadvali -->
+  <div class="reveal mb-10">
+    <h3 class="font-display font-bold text-xl uppercase mb-8 text-center" data-i18n="about_timeline_title"></h3>
+    <div class="relative max-w-3xl mx-auto pl-8 md:pl-0">
+      <div class="absolute left-[7px] md:left-1/2 top-0 bottom-0 w-0.5 bg-flash/30 md:-translate-x-1/2"></div>
+
+      <div class="reveal relative mb-8 md:flex md:items-center md:justify-start">
+        <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
+        <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
+          <span class="text-flash font-display font-bold text-lg">2023</span>
+          <p class="font-semibold mt-1" data-i18n="about_tl1_title"></p>
+          <p class="text-muted text-sm mt-1" data-i18n="about_tl1_text"></p>
+        </div>
+      </div>
+
+      <div class="reveal relative mb-8 md:flex md:items-center md:justify-end">
+        <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
+        <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
+          <span class="text-flash font-display font-bold text-lg">2024</span>
+          <p class="font-semibold mt-1" data-i18n="about_tl2_title"></p>
+          <p class="text-muted text-sm mt-1" data-i18n="about_tl2_text"></p>
+        </div>
+      </div>
+
+      <div class="reveal relative mb-8 md:flex md:items-center md:justify-start">
+        <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
+        <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
+          <span class="text-flash font-display font-bold text-lg">2025</span>
+          <p class="font-semibold mt-1" data-i18n="about_tl3_title"></p>
+          <p class="text-muted text-sm mt-1" data-i18n="about_tl3_text"></p>
+        </div>
+      </div>
+
+      <div class="reveal relative md:flex md:items-center md:justify-end">
+        <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
+        <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
+          <span class="text-flash font-display font-bold text-lg">2026</span>
+          <p class="font-semibold mt-1" data-i18n="about_tl4_title"></p>
+          <p class="text-muted text-sm mt-1" data-i18n="about_tl4_text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Qadriyatlar -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+    <div class="reveal bg-surface border rounded-2xl p-6 card-hover" style="border-color:var(--c-border);">
       <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
       <h3 class="font-display font-semibold text-lg mb-2" data-i18n="about_value1_title"></h3>
       <p class="text-muted text-sm" data-i18n="about_value1_text"></p>
     </div>
-    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+    <div class="reveal bg-surface border rounded-2xl p-6 card-hover" style="border-color:var(--c-border); transition-delay:.1s;">
       <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-truck-fast"></i></div>
       <h3 class="font-display font-semibold text-lg mb-2" data-i18n="about_value2_title"></h3>
       <p class="text-muted text-sm" data-i18n="about_value2_text"></p>
     </div>
-    <div class="bg-surface border rounded-2xl p-6" style="border-color:var(--c-border);">
+    <div class="reveal bg-surface border rounded-2xl p-6 card-hover" style="border-color:var(--c-border); transition-delay:.2s;">
       <div class="w-12 h-12 rounded-full bg-flash/15 flex items-center justify-center text-flash text-xl mb-4"><i class="fa-solid fa-wallet"></i></div>
       <h3 class="font-display font-semibold text-lg mb-2" data-i18n="about_value3_title"></h3>
       <p class="text-muted text-sm" data-i18n="about_value3_text"></p>
     </div>
   </div>
 
-  <div class="bg-surface border rounded-3xl p-8 md:p-12" style="border-color:var(--c-border);">
+  <!-- Raqamlarda biz (animatsiyali sanoq) -->
+  <div class="reveal bg-surface border rounded-3xl p-8 md:p-12" style="border-color:var(--c-border);">
     <h3 class="font-display font-bold text-xl uppercase mb-6 text-center" data-i18n="about_stats_title"></h3>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto text-center">
-      <div><p class="font-display font-bold text-3xl text-flash">1000+</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_customers"></p></div>
-      <div><p class="font-display font-bold text-3xl text-flash">18+</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_models"></p></div>
-      <div><p class="font-display font-bold text-3xl text-flash">100%</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_original"></p></div>
-      <div><p class="font-display font-bold text-3xl text-flash">4</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_brands"></p></div>
+      <div><p class="count-up font-display font-bold text-3xl text-flash" data-target="1000" data-suffix="+">0</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_customers"></p></div>
+      <div><p class="count-up font-display font-bold text-3xl text-flash" data-target="18" data-suffix="+">0</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_models"></p></div>
+      <div><p class="count-up font-display font-bold text-3xl text-flash" data-target="100" data-suffix="%">0</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="stat_original"></p></div>
+      <div><p class="count-up font-display font-bold text-3xl text-flash" data-target="4" data-suffix="">0</p><p class="text-muted text-xs uppercase tracking-wider mt-1" data-i18n="about_stat_brands"></p></div>
     </div>
   </div>
 </section>
