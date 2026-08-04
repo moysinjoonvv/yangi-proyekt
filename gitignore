@@ -1,0 +1,11 @@
+node_modules/
+npm-debug.log
+.env
+.DS_Store
+*.log
+
+# Runtime ma'lumotlar (server birinchi marta ishga tushganda avtomatik yaratiladi)
+orders.json
+users.json
+sessions.json
+stock.json
