@@ -137,6 +137,57 @@ app.get('/api/auth/me', (req, res) => {
 // ============================================================
 //  BUYURTMALAR API
 // ============================================================
+// ============================================================
+//  SHARHLAR VA BAHOLAR (mahsulot uchun)
+// ============================================================
+const REVIEWS_FILE = path.join(__dirname, 'reviews.json');
+
+function getReviewsFor(productId) {
+  const all = readJSON(REVIEWS_FILE, {});
+  return all[productId] || [];
+}
+function summarize(reviews) {
+  const count = reviews.length;
+  const average = count > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / count : 0;
+  return { reviews, average: Math.round(average * 10) / 10, count };
+}
+
+app.get('/api/reviews/:id', (req, res) => {
+  const list = getReviewsFor(req.params.id);
+  res.json(summarize(list));
+});
+
+app.post('/api/reviews/:id', (req, res) => {
+  const user = getCurrentUser(req);
+  if (!user) {
+    return res.status(401).json({ success: false, message: "Sharh qoldirish uchun avval tizimga kiring", authRequired: true });
+  }
+  const { rating, text } = req.body || {};
+  const r = parseInt(rating, 10);
+  if (!r || r < 1 || r > 5) {
+    return res.status(400).json({ success: false, message: "Baho 1 dan 5 gacha bo'lishi kerak" });
+  }
+  const all = readJSON(REVIEWS_FILE, {});
+  const productId = req.params.id;
+  if (!all[productId]) all[productId] = [];
+
+  // Bir foydalanuvchi bitta mahsulotga faqat bitta sharh qoldiradi (eskisini yangilaydi)
+  const existingIdx = all[productId].findIndex(rv => rv.userId === user.id);
+  const review = {
+    id: existingIdx >= 0 ? all[productId][existingIdx].id : 'RV-' + Date.now(),
+    userId: user.id,
+    userName: user.name,
+    rating: r,
+    text: (text || '').trim().slice(0, 1000),
+    date: new Date().toISOString()
+  };
+  if (existingIdx >= 0) all[productId][existingIdx] = review;
+  else all[productId].unshift(review);
+
+  writeJSON(REVIEWS_FILE, all);
+  res.json({ success: true, ...summarize(all[productId]) });
+});
+
 app.post('/api/order', (req, res) => {
   const user = getCurrentUser(req);
   if (!user) {
@@ -571,6 +622,11 @@ function pageHead(title, desc) {
   .provider-option.selected { border-color: #1F5C34 !important; box-shadow: 0 0 0 2px #1F5C34; }
   .pickup-option { background: var(--c-surface2); }
   .pickup-option.selected { border-color: #1F5C34 !important; box-shadow: 0 0 0 2px #1F5C34; }
+  .star-pick { cursor: pointer; color: var(--c-border); transition: color .15s ease, transform .15s ease; }
+  .star-pick:hover, .star-pick.active { color: #FFC400; transform: scale(1.15); }
+  .review-card { background: var(--c-surface2); border-radius: 14px; padding: 14px 16px; }
+  .detail-link { cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .detail-link:hover { color: #1F5C34; }
   .lang-btn {
     padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
     color: var(--c-muted); transition: all .2s ease; cursor: pointer;
@@ -610,11 +666,6 @@ function pageHeader() {
         <i id="themeIcon" class="fa-solid fa-sun"></i>
       </button>
 
-      <!-- Aloqa (yumaloq ikonka) -->
-      <a href="https://t.me/${TELEGRAM_USERNAME}" target="_blank" rel="noopener" class="hidden sm:flex w-11 h-11 rounded-full bg-surface border items-center justify-center hover:border-flash hover:text-flash transition-colors" style="border-color:var(--c-border);">
-        <i class="fa-brands fa-telegram"></i>
-      </a>
-
       <!-- Auth -->
       <div id="authArea"></div>
 
@@ -647,7 +698,6 @@ function pageHeader() {
     <a href="/anjomlar" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="anjomlar" data-i18n="nav_equipment"></a>
     <a href="/katalog" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="katalog" data-i18n="nav_catalog"></a>
     <a href="/about" class="px-5 py-3 hover:text-flash transition-colors navlink" data-nav="about" data-i18n="nav_about"></a>
-    <a href="https://t.me/${TELEGRAM_USERNAME}" target="_blank" rel="noopener" class="px-5 py-3 text-flash flex items-center gap-2"><i class="fa-brands fa-telegram"></i> <span data-i18n="footer_contact"></span></a>
   </nav>
 
   <!-- Mobil til tanlash qatori -->
@@ -809,6 +859,16 @@ function pageModals() {
               <span class="text-xs font-semibold">Uzum Bank</span>
             </button>
           </div>
+
+          <div id="cardNumberBox" class="hidden mt-3 bg-surface2 border rounded-xl p-4" style="border-color:var(--c-border);">
+            <p class="text-xs text-muted mb-2" data-i18n="card_transfer_hint"></p>
+            <div class="flex items-center justify-between gap-2 bg-surface rounded-lg px-4 py-3">
+              <span id="cardNumberText" class="font-display font-bold text-lg tracking-wider">9860 2601 0720 9991</span>
+              <button type="button" onclick="copyCardNumber()" class="text-flash text-sm font-semibold flex items-center gap-1.5 shrink-0">
+                <i id="copyIcon" class="fa-regular fa-copy"></i> <span id="copyLabel" data-i18n="copy_label"></span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="bg-surface2 rounded-xl p-4 flex items-center justify-between">
@@ -838,6 +898,58 @@ function pageModals() {
       <p class="text-white/80 text-sm mb-1" data-i18n="order_id_label"></p>
       <p id="orderSuccessId" class="font-display font-bold text-xl text-white mb-8"></p>
       <button onclick="closeOrderSuccess()" class="w-full bg-white text-black font-semibold py-3.5 rounded-full hover:bg-white/90 transition-colors" data-i18n="btn_close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- MAHSULOT TAFSILOTLARI VA SHARHLAR MODALI -->
+<div id="detailOverlay" class="overlay hidden fixed inset-0 backdrop-blur-sm z-[65] flex items-end sm:items-center justify-center p-0 sm:p-4" style="background-color:var(--c-overlay);" onclick="if(event.target===this) closeDetail()">
+  <div class="bg-surface w-full sm:max-w-2xl sm:rounded-2xl rounded-t-2xl overflow-hidden max-h-[92vh] flex flex-col">
+    <div class="p-5 border-b flex items-center justify-between shrink-0" style="border-color:var(--c-border);">
+      <h3 class="font-display font-semibold text-lg" data-i18n="detail_title"></h3>
+      <button onclick="closeDetail()" class="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="p-5 overflow-y-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+        <img id="detailImg" src="" alt="" class="w-full h-56 object-contain bg-white rounded-2xl p-4">
+        <div>
+          <span id="detailTag" class="text-xs uppercase tracking-wider text-flash font-semibold"></span>
+          <h2 id="detailName" class="font-display font-bold text-2xl my-2"></h2>
+          <div class="flex items-center gap-2 mb-3">
+            <div id="detailStars" class="flex gap-0.5 text-sm"></div>
+            <span id="detailRatingText" class="text-muted text-sm"></span>
+          </div>
+          <div class="flex items-baseline gap-2 mb-4">
+            <p id="detailPrice" class="text-flash font-bold text-2xl"></p>
+            <p id="detailOldPrice" class="text-muted text-sm line-through hidden"></p>
+          </div>
+          <p id="detailDesc" class="text-muted text-sm leading-relaxed mb-5"></p>
+          <button id="detailAddBtn" onclick="detailAddToCart()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full inline-flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cart-plus"></i> <span data-i18n="btn_add_cart"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sharh qoldirish -->
+      <div class="bg-surface2 rounded-2xl p-5 mb-6">
+        <h4 class="font-display font-semibold mb-3" data-i18n="review_add_title"></h4>
+        <div id="reviewLoginPrompt" class="hidden text-sm text-muted">
+          <span data-i18n="review_login_required"></span>
+          <button onclick="openAuth(false); closeDetail();" class="text-flash font-semibold ml-1" data-i18n="auth_login_header"></button>
+        </div>
+        <div id="reviewFormBox">
+          <div id="reviewStarPicker" class="flex gap-1 text-2xl mb-3"></div>
+          <textarea id="reviewText" rows="3" class="w-full bg-surface border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-flash resize-none mb-3" style="border-color:var(--c-border);" data-i18n-placeholder="review_placeholder"></textarea>
+          <button onclick="submitReview()" class="bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold text-sm px-5 py-2.5 rounded-full" data-i18n="review_submit"></button>
+        </div>
+      </div>
+
+      <!-- Sharhlar ro'yxati -->
+      <h4 class="font-display font-semibold mb-3" data-i18n="review_list_title"></h4>
+      <div id="reviewsList" class="space-y-3">
+        <p id="noReviewsText" class="text-muted text-sm" data-i18n="review_empty"></p>
+      </div>
     </div>
   </div>
 </div>
@@ -949,7 +1061,14 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_tl4_title: "Signature va yangi bo'limlar", about_tl4_text: "Maxsus edition butsilar va futbol anjomlari bo'limini ishga tushirdik.",
       payment_provider_hint: "To'lov tizimini tanlang", choose_provider_alert: "Iltimos, to'lov tizimini tanlang",
       delivery_method_label: "Yetkazib berish usuli", delivery_home: "Uygacha yetkazib berish", delivery_pickup: "Do'kondan olib ketish",
-      pickup_choose_label: "Filialni tanlang", choose_pickup_alert: "Iltimos, filialni tanlang"
+      pickup_choose_label: "Filialni tanlang", choose_pickup_alert: "Iltimos, filialni tanlang",
+      card_transfer_hint: "Tanlangan tizim ilovasi ochildi. To'lovni tasdiqlash uchun quyidagi karta raqamiga summani o'tkazing va skrinshot saqlab qo'ying:",
+      copy_label: "Nusxalash", copied_label: "Nusxalandi!",
+      detail_title: "Mahsulot tafsilotlari",
+      review_add_title: "Sharh qoldiring", review_login_required: "Sharh qoldirish uchun avval tizimga kiring.",
+      review_placeholder: "Mahsulot haqida fikringizni yozing (ixtiyoriy)...", review_submit: "Yuborish",
+      review_list_title: "Mijozlar sharhlari", review_empty: "Hali sharh yo'q — birinchi bo'lib fikr bildiring!",
+      review_no_ratings: "Hali baholanmagan", review_choose_stars: "Iltimos, yulduzcha bilan baho bering"
     },
     ru: {
       hero_badge: "Оригинальное и премиум качество",
@@ -1008,7 +1127,14 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_tl4_title: "Именные модели и новые разделы", about_tl4_text: "Запустили линейку именных бутс и раздел футбольного инвентаря.",
       payment_provider_hint: "Выберите платёжную систему", choose_provider_alert: "Пожалуйста, выберите платёжную систему",
       delivery_method_label: "Способ доставки", delivery_home: "Доставка на дом", delivery_pickup: "Самовывоз из магазина",
-      pickup_choose_label: "Выберите филиал", choose_pickup_alert: "Пожалуйста, выберите филиал"
+      pickup_choose_label: "Выберите филиал", choose_pickup_alert: "Пожалуйста, выберите филиал",
+      card_transfer_hint: "Приложение выбранной системы открыто. Для оплаты переведите сумму на карту ниже и сохраните скриншот:",
+      copy_label: "Копировать", copied_label: "Скопировано!",
+      detail_title: "О товаре",
+      review_add_title: "Оставить отзыв", review_login_required: "Для отзыва сначала войдите в аккаунт.",
+      review_placeholder: "Напишите ваше мнение о товаре (необязательно)...", review_submit: "Отправить",
+      review_list_title: "Отзывы покупателей", review_empty: "Отзывов пока нет — станьте первым!",
+      review_no_ratings: "Пока без оценок", review_choose_stars: "Пожалуйста, поставьте оценку"
     },
     en: {
       hero_badge: "Original & Premium Quality",
@@ -1067,7 +1193,14 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_tl4_title: "Signature Line & New Sections", about_tl4_text: "Launched signature edition boots and the football gear section.",
       payment_provider_hint: "Choose a payment system", choose_provider_alert: "Please choose a payment system",
       delivery_method_label: "Delivery Method", delivery_home: "Home Delivery", delivery_pickup: "Pickup From Store",
-      pickup_choose_label: "Choose a branch", choose_pickup_alert: "Please choose a branch"
+      pickup_choose_label: "Choose a branch", choose_pickup_alert: "Please choose a branch",
+      card_transfer_hint: "The selected provider's app has opened. To confirm payment, transfer the amount to the card below and save a screenshot:",
+      copy_label: "Copy", copied_label: "Copied!",
+      detail_title: "Product Details",
+      review_add_title: "Leave a Review", review_login_required: "Please sign in first to leave a review.",
+      review_placeholder: "Share your thoughts about this product (optional)...", review_submit: "Submit",
+      review_list_title: "Customer Reviews", review_empty: "No reviews yet — be the first!",
+      review_no_ratings: "Not yet rated", review_choose_stars: "Please select a star rating"
     }
   };
 
@@ -1084,6 +1217,9 @@ function pageScript(productsWithStock, signatureWithStock) {
   function applyLanguage() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
     });
     ['Uz','Ru','En'].forEach(suf => {
       const btn = document.getElementById('langBtn' + suf);
@@ -1137,7 +1273,8 @@ function pageScript(productsWithStock, signatureWithStock) {
         </div>
         <div class="p-5 flex flex-col flex-1">
           <span class="text-xs uppercase tracking-wider text-flash font-semibold">\${info.tag}</span>
-          <h3 class="font-display font-semibold text-xl my-2">\${info.name}</h3>
+          <h3 class="font-display font-semibold text-xl my-2 detail-link" onclick="openDetail('\${p.id}')">\${info.name}</h3>
+          <div class="rating-mini flex items-center gap-1.5 mb-2 text-xs text-muted" data-pid="\${p.id}"></div>
           <p class="text-muted text-sm mb-3">\${info.desc}</p>
           <div class="flex items-baseline gap-2 mb-1">
             <p class="text-flash font-bold text-2xl">\${fmt(p.price)} <span class="text-sm font-normal text-muted">so'm</span></p>
@@ -1163,6 +1300,33 @@ function pageScript(productsWithStock, signatureWithStock) {
     const sigGrid = document.getElementById('signatureGrid');
     if (sigGrid) sigGrid.innerHTML = SIGNATURE.map(productCardHTML).join('');
     renderEquipmentGrid();
+    loadMiniRatings();
+  }
+
+  function starsHTML(avg, size) {
+    const cls = size || 'text-sm';
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+      const filled = avg >= i - 0.25;
+      html += \`<i class="\${filled ? 'fa-solid' : 'fa-regular'} fa-star \${cls}" style="color:\${filled ? '#FFC400' : 'var(--c-muted)'}"></i>\`;
+    }
+    return html;
+  }
+
+  function loadMiniRatings() {
+    document.querySelectorAll('.rating-mini').forEach(el => {
+      const pid = el.dataset.pid;
+      fetch('/api/reviews/' + pid)
+        .then(r => r.json())
+        .then(data => {
+          if (data.count > 0) {
+            el.innerHTML = starsHTML(data.average, 'text-xs') + \`<span>\${data.average} (\${data.count})</span>\`;
+          } else {
+            el.innerHTML = \`<span>\${t('review_no_ratings')}</span>\`;
+          }
+        })
+        .catch(() => {});
+    });
   }
 
   function applyBrandFilter(brand) {
@@ -1195,7 +1359,8 @@ function pageScript(productsWithStock, signatureWithStock) {
           <img src="\${p.img}" alt="\${info.name}" class="h-40 object-contain" loading="lazy">
         </div>
         <div class="p-5 flex flex-col flex-1">
-          <h3 class="font-display font-semibold text-lg my-1">\${info.name}</h3>
+          <h3 class="font-display font-semibold text-lg my-1 detail-link" onclick="openDetail('\${p.id}')">\${info.name}</h3>
+          <div class="rating-mini flex items-center gap-1.5 mb-2 text-xs text-muted" data-pid="\${p.id}"></div>
           <p class="text-muted text-sm mb-3">\${info.desc}</p>
           <div class="flex items-baseline gap-2 mb-4">
             <p class="text-flash font-bold text-xl">\${fmt(p.price)} <span class="text-sm font-normal text-muted">so'm</span></p>
@@ -1340,6 +1505,144 @@ function pageScript(productsWithStock, signatureWithStock) {
 
   function closeSizeModal() { document.getElementById('sizeModalOverlay').classList.add('hidden'); }
 
+  // ============================================================
+  //  MAHSULOT TAFSILOTLARI VA SHARHLAR
+  // ============================================================
+  let currentDetailProduct = null;
+  let currentDetailIsEquipment = false;
+  let currentReviewStars = 0;
+
+  function findAnyProduct(id) {
+    const boot = ALL_BOOTS.find(x => x.id === id);
+    if (boot) return { product: boot, isEquipment: false };
+    const eq = EQUIPMENT.find(x => x.id === id);
+    if (eq) return { product: eq, isEquipment: true };
+    return null;
+  }
+
+  function openDetail(id) {
+    const found = findAnyProduct(id);
+    if (!found) return;
+    currentDetailProduct = found.product;
+    currentDetailIsEquipment = found.isEquipment;
+    const p = found.product;
+    const info = p.i18n[currentLang] || p.i18n.uz;
+
+    document.getElementById('detailImg').src = p.img;
+    document.getElementById('detailImg').alt = info.name;
+    document.getElementById('detailTag').textContent = info.tag || '';
+    document.getElementById('detailTag').style.display = info.tag ? '' : 'none';
+    document.getElementById('detailName').textContent = info.name;
+    document.getElementById('detailDesc').textContent = info.desc;
+    document.getElementById('detailPrice').textContent = fmt(p.price) + " so'm";
+    const oldEl = document.getElementById('detailOldPrice');
+    if (p.oldPrice && p.oldPrice > p.price) {
+      oldEl.textContent = fmt(p.oldPrice) + " so'm";
+      oldEl.classList.remove('hidden');
+    } else {
+      oldEl.classList.add('hidden');
+    }
+
+    document.getElementById('detailOverlay').classList.remove('hidden');
+    loadReviews(id);
+  }
+
+  function closeDetail() {
+    document.getElementById('detailOverlay').classList.add('hidden');
+  }
+
+  function detailAddToCart() {
+    if (!currentDetailProduct) return;
+    closeDetail();
+    if (currentDetailIsEquipment) {
+      addEquipmentToCart(currentDetailProduct.id);
+    } else {
+      openSizeModal(currentDetailProduct.id);
+    }
+  }
+
+  function buildStarPicker() {
+    const box = document.getElementById('reviewStarPicker');
+    box.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('i');
+      star.className = 'fa-solid fa-star star-pick';
+      star.dataset.value = i;
+      star.onclick = () => {
+        currentReviewStars = i;
+        document.querySelectorAll('#reviewStarPicker .star-pick').forEach((s, idx) => {
+          s.classList.toggle('active', idx < i);
+        });
+      };
+      box.appendChild(star);
+    }
+  }
+  buildStarPicker();
+
+  function loadReviews(id) {
+    currentReviewStars = 0;
+    document.querySelectorAll('#reviewStarPicker .star-pick').forEach(s => s.classList.remove('active'));
+    document.getElementById('reviewText').value = '';
+
+    document.getElementById('reviewLoginPrompt').classList.toggle('hidden', !!currentUser);
+    document.getElementById('reviewFormBox').classList.toggle('hidden', !currentUser);
+
+    fetch('/api/reviews/' + id)
+      .then(r => r.json())
+      .then(data => renderReviews(data));
+  }
+
+  function renderReviews(data) {
+    document.getElementById('detailStars').innerHTML = starsHTML(data.average, 'text-base');
+    document.getElementById('detailRatingText').textContent = data.count > 0
+      ? data.average + ' (' + data.count + ')'
+      : t('review_no_ratings');
+
+    const list = document.getElementById('reviewsList');
+    const noText = document.getElementById('noReviewsText');
+    if (data.reviews.length === 0) {
+      list.innerHTML = '';
+      list.appendChild(noText);
+      noText.classList.remove('hidden');
+      return;
+    }
+    list.innerHTML = data.reviews.map(rv => \`
+      <div class="review-card">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="font-semibold text-sm">\${rv.userName}</span>
+          <span class="text-xs text-muted">\${new Date(rv.date).toLocaleDateString()}</span>
+        </div>
+        <div class="flex gap-0.5 mb-1.5">\${starsHTML(rv.rating, 'text-xs')}</div>
+        \${rv.text ? \`<p class="text-sm text-muted">\${rv.text}</p>\` : ''}
+      </div>\`).join('');
+  }
+
+  function submitReview() {
+    if (!currentDetailProduct) return;
+    if (currentReviewStars < 1) { alert(t('review_choose_stars')); return; }
+    const text = document.getElementById('reviewText').value.trim();
+
+    fetch('/api/reviews/' + currentDetailProduct.id, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: currentReviewStars, text })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          renderReviews(data);
+          loadMiniRatings();
+          document.getElementById('reviewText').value = '';
+        } else if (data.authRequired) {
+          document.getElementById('reviewLoginPrompt').classList.remove('hidden');
+          document.getElementById('reviewFormBox').classList.add('hidden');
+        } else {
+          alert(data.message || t('err_server'));
+        }
+      })
+      .catch(() => alert(t('err_server')));
+  }
+
   function updateStickyAddBar() {
     const rows = document.querySelectorAll('#sizeOptions > div');
     let totalQty = 0;
@@ -1446,16 +1749,41 @@ function pageScript(productsWithStock, signatureWithStock) {
     document.getElementById('payCashBtn').classList.toggle('selected', method === 'cash');
     document.getElementById('payCardBtn').classList.toggle('selected', method === 'card');
     document.getElementById('cardProviders').classList.toggle('hidden', method !== 'card');
+    document.getElementById('cardNumberBox').classList.add('hidden');
     if (method === 'cash') {
       selectedProvider = null;
       document.querySelectorAll('.provider-option').forEach(b => b.classList.remove('selected'));
     }
   }
 
+  const PROVIDER_URLS = {
+    payme: 'https://payme.uz',
+    paynet: 'https://paynet.uz',
+    uzum: 'https://uzumbank.uz'
+  };
+
   function selectProvider(provider, btnEl) {
     selectedProvider = provider;
     document.querySelectorAll('.provider-option').forEach(b => b.classList.remove('selected'));
     btnEl.classList.add('selected');
+    document.getElementById('cardNumberBox').classList.remove('hidden');
+    const url = PROVIDER_URLS[provider];
+    if (url) window.open(url, '_blank');
+  }
+
+  function copyCardNumber() {
+    const text = document.getElementById('cardNumberText').textContent.replace(/\s/g, '');
+    navigator.clipboard.writeText(text).then(() => {
+      const icon = document.getElementById('copyIcon');
+      const label = document.getElementById('copyLabel');
+      icon.className = 'fa-solid fa-check';
+      const original = label.textContent;
+      label.textContent = t('copied_label');
+      setTimeout(() => {
+        icon.className = 'fa-regular fa-copy';
+        label.textContent = original;
+      }, 1800);
+    });
   }
 
   let selectedDeliveryMethod = 'home';
