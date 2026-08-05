@@ -946,7 +946,7 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_tl1_title: "Kichik boshlanish", about_tl1_text: "Bir nechta model bilan onlayn savdoni boshladik.",
       about_tl2_title: "Birinchi filial", about_tl2_text: "Toshkentda birinchi jismoniy do'konimizni ochdik.",
       about_tl3_title: "1000+ mijoz", about_tl3_text: "Mingdan ortiq mamnun mijozga xizmat ko'rsatdik.",
-      about_tl4_title: "Signature va yangi bo'limlar", about_tl4_text: "Maxsus edition butsilar va futbol anjomlari bo'limini ishga tushirdik."
+      about_tl4_title: "Signature va yangi bo'limlar", about_tl4_text: "Maxsus edition butsilar va futbol anjomlari bo'limini ishga tushirdik.",
       payment_provider_hint: "To'lov tizimini tanlang", choose_provider_alert: "Iltimos, to'lov tizimini tanlang",
       delivery_method_label: "Yetkazib berish usuli", delivery_home: "Uygacha yetkazib berish", delivery_pickup: "Do'kondan olib ketish",
       pickup_choose_label: "Filialni tanlang", choose_pickup_alert: "Iltimos, filialni tanlang"
@@ -1005,7 +1005,7 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_tl1_title: "Скромное начало", about_tl1_text: "Начали онлайн-продажи с нескольких моделей.",
       about_tl2_title: "Первый филиал", about_tl2_text: "Открыли первый физический магазин в Ташкенте.",
       about_tl3_title: "1000+ клиентов", about_tl3_text: "Обслужили более тысячи довольных клиентов.",
-      about_tl4_title: "Именные модели и новые разделы", about_tl4_text: "Запустили линейку именных бутс и раздел футбольного инвентаря."
+      about_tl4_title: "Именные модели и новые разделы", about_tl4_text: "Запустили линейку именных бутс и раздел футбольного инвентаря.",
       payment_provider_hint: "Выберите платёжную систему", choose_provider_alert: "Пожалуйста, выберите платёжную систему",
       delivery_method_label: "Способ доставки", delivery_home: "Доставка на дом", delivery_pickup: "Самовывоз из магазина",
       pickup_choose_label: "Выберите филиал", choose_pickup_alert: "Пожалуйста, выберите филиал"
@@ -1064,7 +1064,7 @@ function pageScript(productsWithStock, signatureWithStock) {
       about_tl1_title: "A Small Start", about_tl1_text: "Began online sales with just a handful of models.",
       about_tl2_title: "First Branch", about_tl2_text: "Opened our first physical store in Tashkent.",
       about_tl3_title: "1000+ Customers", about_tl3_text: "Served over a thousand happy customers.",
-      about_tl4_title: "Signature Line & New Sections", about_tl4_text: "Launched signature edition boots and the football gear section."
+      about_tl4_title: "Signature Line & New Sections", about_tl4_text: "Launched signature edition boots and the football gear section.",
       payment_provider_hint: "Choose a payment system", choose_provider_alert: "Please choose a payment system",
       delivery_method_label: "Delivery Method", delivery_home: "Home Delivery", delivery_pickup: "Pickup From Store",
       pickup_choose_label: "Choose a branch", choose_pickup_alert: "Please choose a branch"
