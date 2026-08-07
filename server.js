@@ -596,6 +596,13 @@ function pageHead(title, desc) {
     opacity: 1;
     transform: translateY(0);
   }
+  .timeline-left { transform: translateX(-32px); }
+  .timeline-right { transform: translateX(32px); }
+  .timeline-left.visible, .timeline-right.visible { transform: translateX(0); }
+  @media (max-width: 767px) {
+    .timeline-left, .timeline-right { transform: translateY(28px); }
+    .timeline-left.visible, .timeline-right.visible { transform: translateY(0); }
+  }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
     .reveal { opacity: 1 !important; transform: none !important; }
@@ -748,7 +755,7 @@ function pageModals() {
       <p class="text-xs text-muted mb-3" data-i18n="select_sizes_hint"></p>
       <div id="sizeOptions" class="space-y-2 mb-4"></div>
 
-      <button onclick="confirmAddToCart()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full" data-i18n="btn_add_to_cart_confirm"></button>
+      <button id="bottomAddBtn" onclick="confirmAddToCart()" class="w-full bg-flash hover:bg-[#163F24] transition-colors text-white font-semibold py-3.5 rounded-full" data-i18n="btn_add_to_cart_confirm"></button>
     </div>
   </div>
 </div>
@@ -1501,9 +1508,30 @@ function pageScript(productsWithStock, signatureWithStock) {
     }
 
     document.getElementById('sizeModalOverlay').classList.remove('hidden');
+
+    // Pastdagi asosiy "Savatga qo'shish" tugmasi ko'rinib turganda,
+    // tepadagi "yopishqoq" panelni yashiramiz (ikkalasi bir vaqtda ko'rinmasin)
+    if (bottomBtnObserver) bottomBtnObserver.disconnect();
+    bottomBtnVisible = true;
+    setTimeout(() => {
+      const scrollRoot = document.querySelector('#sizeModalOverlay .overflow-y-auto');
+      const target = document.getElementById('bottomAddBtn');
+      if (scrollRoot && target && 'IntersectionObserver' in window) {
+        bottomBtnObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            bottomBtnVisible = entry.isIntersecting;
+            updateStickyAddBar();
+          });
+        }, { root: scrollRoot, threshold: 0.2 });
+        bottomBtnObserver.observe(target);
+      }
+    }, 60);
   }
 
-  function closeSizeModal() { document.getElementById('sizeModalOverlay').classList.add('hidden'); }
+  function closeSizeModal() {
+    document.getElementById('sizeModalOverlay').classList.add('hidden');
+    if (bottomBtnObserver) { bottomBtnObserver.disconnect(); bottomBtnObserver = null; }
+  }
 
   // ============================================================
   //  MAHSULOT TAFSILOTLARI VA SHARHLAR
@@ -1643,6 +1671,9 @@ function pageScript(productsWithStock, signatureWithStock) {
       .catch(() => alert(t('err_server')));
   }
 
+  let bottomBtnVisible = false;
+  let bottomBtnObserver = null;
+
   function updateStickyAddBar() {
     const rows = document.querySelectorAll('#sizeOptions > div');
     let totalQty = 0;
@@ -1655,7 +1686,8 @@ function pageScript(productsWithStock, signatureWithStock) {
     const bar = document.getElementById('stickyAddBar');
     if (totalQty > 0) {
       document.getElementById('stickyAddBarText').textContent = totalQty + ' × — ' + fmt(totalSum) + " so'm";
-      bar.classList.remove('hidden');
+      // Pastdagi asosiy tugma ko'rinib turgan bo'lsa, tepadagi "yopishqoq" panelni ko'rsatmaymiz
+      bar.classList.toggle('hidden', bottomBtnVisible);
     } else {
       bar.classList.add('hidden');
     }
@@ -2325,12 +2357,12 @@ app.get('/about', (req, res) => {
   </div>
 
   <!-- Vaqt jadvali -->
-  <div class="reveal mb-10">
-    <h3 class="font-display font-bold text-xl uppercase mb-8 text-center" data-i18n="about_timeline_title"></h3>
+  <div class="mb-10">
+    <h3 class="reveal font-display font-bold text-xl uppercase mb-8 text-center" data-i18n="about_timeline_title"></h3>
     <div class="relative max-w-3xl mx-auto pl-8 md:pl-0">
       <div class="absolute left-[7px] md:left-1/2 top-0 bottom-0 w-0.5 bg-flash/30 md:-translate-x-1/2"></div>
 
-      <div class="reveal relative mb-8 md:flex md:items-center md:justify-start">
+      <div class="reveal timeline-left relative mb-8 md:flex md:items-center md:justify-start" style="transition-delay:0s;">
         <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
         <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
           <span class="text-flash font-display font-bold text-lg">2023</span>
@@ -2339,7 +2371,7 @@ app.get('/about', (req, res) => {
         </div>
       </div>
 
-      <div class="reveal relative mb-8 md:flex md:items-center md:justify-end">
+      <div class="reveal timeline-right relative mb-8 md:flex md:items-center md:justify-end" style="transition-delay:.1s;">
         <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
         <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
           <span class="text-flash font-display font-bold text-lg">2024</span>
@@ -2348,7 +2380,7 @@ app.get('/about', (req, res) => {
         </div>
       </div>
 
-      <div class="reveal relative mb-8 md:flex md:items-center md:justify-start">
+      <div class="reveal timeline-left relative mb-8 md:flex md:items-center md:justify-start" style="transition-delay:.2s;">
         <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
         <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
           <span class="text-flash font-display font-bold text-lg">2025</span>
@@ -2357,7 +2389,7 @@ app.get('/about', (req, res) => {
         </div>
       </div>
 
-      <div class="reveal relative md:flex md:items-center md:justify-end">
+      <div class="reveal timeline-right relative md:flex md:items-center md:justify-end" style="transition-delay:.3s;">
         <span class="absolute left-0 md:left-1/2 top-1 w-4 h-4 rounded-full bg-flash md:-translate-x-1/2 ring-4" style="--tw-ring-color: var(--c-bg);"></span>
         <div class="md:w-[calc(50%-2rem)] bg-surface border rounded-2xl p-5" style="border-color:var(--c-border);">
           <span class="text-flash font-display font-bold text-lg">2026</span>
